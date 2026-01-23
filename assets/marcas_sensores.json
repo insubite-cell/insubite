@@ -1,0 +1,9 @@
+[
+  { "id": 1, "nombre": "Dexcom" },
+  { "id": 2, "nombre": "Abbott" },
+  { "id": 3, "nombre": "Medtronic" },
+  { "id": 4, "nombre": "Eversense" },
+  { "id": 5, "nombre": "Senseonics" },
+  { "id": 6, "nombre": "Roche" },
+  { "id": 7, "nombre": "GlucoMen" }
+]

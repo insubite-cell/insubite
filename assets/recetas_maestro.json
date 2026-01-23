@@ -1,0 +1,789 @@
+[
+  {
+    "id": 1,
+    "titulo": "Bombones helados",
+    "ingredientes": [
+      "1/4 taza de mantequilla de maní sin azúcar",
+      "1/4 taza de leche en polvo",
+      "1 puñado de copos de cereal sin azúcar",
+      "Chocolate para bañar"
+    ],
+    "preparacion": [
+      "Procesar todos los ingredientes hasta obtener una masa homogénea.",
+      "Hacer bolitas y llevar al freezer o congelador.",
+      "Bañar las bolitas con chocolate y conservar en frío hasta su consumo."
+    ],
+    "porcion": "2 trufas (40g)",
+    "HC": "10.85g",
+    "Fibra": "2.66g"
+  },
+  {
+    "id": 2,
+    "titulo": "Budín de café, avena y chocolate",
+    "ingredientes": [
+      "3 huevos",
+      "1 manzana cortada en cubos",
+      "30 gramos de avena",
+      "130 gramos de cacao amargo",
+      "3 cucharaditas de té al ras de edulcorante líquido o 6 sobres (aptos cocción)",
+      "70 ml de café",
+      "140 gramos de harina integral",
+      "2 cucharaditas de té de polvo para hornear"
+    ],
+    "preparacion": [
+      "Procesar huevos, manzana, avena, cacao y edulcorante hasta formar una pasta líquida.",
+      "Agregar café y procesar nuevamente.",
+      "Pasar a un bowl, añadir harina integral con polvo de hornear e integrar con movimientos envolventes.",
+      "Colocar en molde aceitado.",
+      "Cocinar en horno medio 40 minutos aproximadamente.",
+      "Dejar enfriar y desmoldar."
+    ],
+    "porcion": "110g",
+    "HC": "32.5g",
+    "Fibra": "11.93g"
+  },
+  {
+    "id": 3,
+    "titulo": "Budín de choco-porotos",
+    "ingredientes": [
+      "200 gramos de porotos cocidos",
+      "1 huevo",
+      "1/2 taza de aceite",
+      "3 cucharaditas de té de edulcorante líquido (apto cocción)",
+      "2 tazas de harina 0000",
+      "3 cucharadas de cacao amargo",
+      "1 cucharada de polvo para hornear",
+      "1/4 taza de agua caliente"
+    ],
+    "preparacion": [
+      "Licuar porotos con huevo y aceite hasta lograr mezcla homogénea.",
+      "Pasar a un bowl, añadir secos y mezclar sin grumos.",
+      "Agregar agua caliente y batir.",
+      "Colocar en budinera aceitada y enharinada.",
+      "Cocinar en horno medio 45 minutos.",
+      "Enfriar y desmoldar."
+    ],
+    "porcion": "120g",
+    "HC": "41g",
+    "Fibra": "6g"
+  },
+  {
+    "id": 4,
+    "titulo": "Galletitas de naranja y limón",
+    "ingredientes": [
+      "1 huevo",
+      "2 cucharaditas de té de edulcorante líquido (apto cocción)",
+      "3 cucharadas de aceite",
+      "Jugo de 1/2 naranja",
+      "Ralladura de 1 limón y 1 naranja",
+      "80 g de almidón de maíz",
+      "60 g de harina integral",
+      "1 cucharadita de té de polvo de hornear"
+    ],
+    "preparacion": [
+      "Batir huevo con edulcorante.",
+      "Agregar aceite, jugo y ralladuras.",
+      "Incorporar secos con movimientos envolventes.",
+      "Armar bolitas, aplastar y colocar en placa aceitada.",
+      "Hornear a temperatura media 8-10 min hasta dorar."
+    ],
+    "porcion": "4 galletitas (60g)",
+    "HC": "21.6g",
+    "Fibra": "1.41g"
+  },
+  {
+    "id": 5,
+    "titulo": "Bocaditos helados de yogur y fruta",
+    "ingredientes": [
+      "1/2 pote de queso crema",
+      "1 yogur natural",
+      "Ralladura de 1/2 limón",
+      "1 cucharadita de esencia de vainilla",
+      "2 cucharaditas de edulcorante líquido",
+      "1 paquete de galletitas sin azúcar",
+      "2 cucharadas de aceite",
+      "Fruta a elección"
+    ],
+    "preparacion": [
+      "Mezclar queso crema, yogur, ralladura, vainilla y edulcorante.",
+      "Romper galletitas, agregar aceite y un poco de agua.",
+      "En cubetera colocar galletitas como base, luego la mezcla y fruta.",
+      "Congelar 2 horas y desmoldar antes de servir."
+    ],
+    "porcion": "120g",
+    "HC": "18g",
+    "Fibra": "3g"
+  },
+  {
+    "id": 6,
+    "titulo": "Trufas de porotos negros",
+    "ingredientes": [
+      "2 1/2 tazas de porotos negros cocidos",
+      "5 cucharadas de cacao amargo",
+      "1 banana verde",
+      "1 cucharadita de edulcorante líquido",
+      "Coco rallado (cantidad necesaria)"
+    ],
+    "preparacion": [
+      "Procesar todos los ingredientes hasta lograr pasta homogénea.",
+      "Formar bolitas, pasarlas por coco rallado.",
+      "Llevar al frío hasta consumir."
+    ],
+    "porcion": "180g",
+    "HC": "37g",
+    "Fibra": "20g"
+  },
+  {
+    "id": 7,
+    "titulo": "Pancakes de zanahoria",
+    "ingredientes": [
+      "2 claras",
+      "2 huevos",
+      "1/2 taza de avena extra fina",
+      "1/2 cucharadita de esencia de vainilla",
+      "1 cucharadita de edulcorante líquido",
+      "1/2 zanahoria rallada fina",
+      "1/2 cucharadita de polvo de hornear",
+      "2 cucharadas de leche descremada"
+    ],
+    "preparacion": [
+      "Licuar todos los ingredientes.",
+      "Calentar sartén a fuego medio con poco aceite.",
+      "Cocinar 2 cucharadas por pancake hasta dorar de ambos lados."
+    ],
+    "porcion": "167g (1/2 receta)",
+    "HC": "27g",
+    "Fibra": "6g"
+  },
+  {
+    "id": 8,
+    "titulo": "Postre de chocolate",
+    "ingredientes": [
+      "2 tazas de leche descremada",
+      "1/4 taza de cacao amargo en polvo",
+      "2 cucharaditas de edulcorante líquido o 5 sobres apto cocción",
+      "4 cucharadas de almidón de maíz",
+      "100 g de chocolate amargo picado",
+      "1 cucharada de esencia de vainilla",
+      "Opcional: frutos secos picados y tostados"
+    ],
+    "preparacion": [
+      "Disolver almidón de maíz en 1/2 taza de leche.",
+      "En fuego bajo, calentar resto de la leche con cacao.",
+      "Agregar mezcla de almidón, revolviendo hasta espesar.",
+      "Apagar fuego, añadir edulcorante, vainilla y chocolate picado.",
+      "Revolver hasta integrar. Colocar en compoteras.",
+      "Enfriar en heladera 8 horas. Decorar con frutos secos."
+    ],
+    "porcion": "155g (1/4 receta)",
+    "HC": "34g",
+    "Fibra": "4.22g"
+  },
+  {
+    "id": 9,
+    "titulo": "Albóndigas de vegetales",
+    "ingredientes": [
+      "2 cebollas",
+      "1 berenjena",
+      "1 zanahoria",
+      "1 atado de espinaca",
+      "3 dientes de ajo",
+      "1 huevo",
+      "4 cucharadas de harina de avena",
+      "1 cucharada de aceite",
+      "Perejil picado, sal y pimienta al gusto"
+    ],
+    "preparacion": [
+      "Picar vegetales y saltear con aceite.",
+      "Pasar a bowl, agregar harina de avena, perejil y huevo.",
+      "Formar bolitas y colocarlas en placa aceitada.",
+      "Hornear a temperatura media hasta dorar."
+    ],
+    "porcion": "200g (5 unidades)",
+    "HC": "22g",
+    "Fibra": "6g"
+  },
+  {
+    "id": 10,
+    "titulo": "Dip de remolacha",
+    "ingredientes": [
+      "1/2 remolacha cocida y rallada",
+      "1 cucharada de jugo de limón",
+      "2 cucharadas de aceite de oliva",
+      "2 cucharadas de agua"
+    ],
+    "preparacion": [
+      "Procesar todos los ingredientes hasta lograr consistencia untable.",
+      "Guardar en recipiente hermético en la heladera."
+    ],
+    "porcion": "110g",
+    "HC": "4.8g",
+    "Fibra": "1.4g"
+  },
+  {
+    "id": 11,
+    "titulo": "Fajitas integrales",
+    "ingredientes": [
+      "250 g de harina integral",
+      "150 cc de agua",
+      "1 cucharada de aceite",
+      "1 cucharada de semillas",
+      "1/2 cucharadita de sal",
+      "1/2 cucharadita de polvo de hornear"
+    ],
+    "preparacion": [
+      "Unir ingredientes hasta lograr masa lisa.",
+      "Descansar 30 minutos.",
+      "Dividir en bollitos, estirar y cocinar en sartén vuelta y vuelta."
+    ],
+    "porcion": "2 fajitas",
+    "HC": "43g",
+    "Fibra": "10g"
+  },
+  {
+    "id": 12,
+    "titulo": "Masa de tarta",
+    "ingredientes": [
+      "200 g de harina integral",
+      "Agua cantidad necesaria",
+      "2 cucharadas de aceite",
+      "1 cucharada de semillas",
+      "1/2 cucharadita de sal",
+      "1/2 cucharadita de polvo de hornear"
+    ],
+    "preparacion": [
+      "Unir todos los ingredientes hasta tener masa lisa.",
+      "Descansar 30 minutos.",
+      "Estirar con palo de amasar.",
+      "Colocar en asadera aceitada y pinchar base.",
+      "Hornear a fuego medio hasta levemente dorada."
+    ],
+    "porcion": "2 porciones",
+    "HC": "40g",
+    "Fibra": "9.9g"
+  },
+  {
+    "id": 13,
+    "titulo": "Nachos integrales",
+    "ingredientes": [
+      "200 g de harina de maíz",
+      "80 g de aceite de oliva",
+      "100 cc de agua",
+      "Sal, pimienta y pimentón al gusto"
+    ],
+    "preparacion": [
+      "Mezclar harina con sal y condimentos.",
+      "Agregar aceite y agua, amasar hasta masa homogénea.",
+      "Estirar a 2 mm de grosor, cortar en triángulos.",
+      "Hornear a temperatura media hasta dorar."
+    ],
+    "porcion": "80g",
+    "HC": "28g",
+    "Fibra": "0.8g"
+  },
+  {
+    "id": 14,
+    "titulo": "Pan integral",
+    "ingredientes": [
+      "350 g de harina integral",
+      "300 cc de agua",
+      "100 g de harina 000",
+      "3 cucharadas de aceite",
+      "3 cucharadas de semillas",
+      "15 g de levadura fresca o 5 g seca",
+      "1/2 cucharadita de sal"
+    ],
+    "preparacion": [
+      "Formar corona con harina y sal.",
+      "Colocar en el centro los demás ingredientes, amasar hasta masa lisa.",
+      "Reposar 1 hora.",
+      "Estirar y formar rollo, colocar en molde de pan aceitado.",
+      "Pintar con agua y semillas.",
+      "Dejar levar hasta duplicar volumen.",
+      "Hornear 40 minutos a temperatura media."
+    ],
+    "porcion": "120g",
+    "HC": "39g",
+    "Fibra": "10g"
+  },
+  {
+    "id": 15,
+    "titulo": "Pizza de vegetales",
+    "ingredientes": [
+      "1 papa",
+      "1 zucchini",
+      "1 coliflor",
+      "2 huevos",
+      "250 g de mozzarella rallada",
+      "150 g de salsa de tomate",
+      "Sal, orégano, pimienta y pimentón al gusto"
+    ],
+    "preparacion": [
+      "Rallar papa, zucchini y coliflor.",
+      "Cocinar en microondas 5 minutos.",
+      "Agregar sal, pimienta y huevos, mezclar.",
+      "Colocar en placa y hornear 10 minutos.",
+      "Añadir salsa, queso y toppings.",
+      "Gratinar a horno fuerte."
+    ],
+    "porcion": "1/2 unidad",
+    "HC": "15g",
+    "Fibra": "3.45g"
+  },
+  {
+    "id": 16,
+    "titulo": "Snack de garbanzos",
+    "ingredientes": [
+      "1 taza de garbanzos hervidos",
+      "Jugo de limón",
+      "1 cucharada de pimentón dulce",
+      "1 cucharadita de ajo en polvo",
+      "1 cucharadita de comino en polvo",
+      "1 cucharadita de curry"
+    ],
+    "preparacion": [
+      "Mezclar garbanzos con jugo de limón y condimentos.",
+      "Colocar en placa y hornear 20 minutos hasta crocantes.",
+      "Guardar en frasco hermético."
+    ],
+    "porcion": "80g",
+    "HC": "11.6g",
+    "Fibra": "5.6g"
+  },
+  {
+    "id": 17,
+    "titulo": "Tortilla de espinacas y queso bajo en grasa",
+    "ingredientes": [
+      "2 huevos",
+      "1 taza de espinacas frescas picadas",
+      "1/4 de taza de queso bajo en grasa rallado",
+      "1/4 de cebolla picada",
+      "1/4 de pimiento rojo picado",
+      "Sal y pimienta al gusto",
+      "Aceite de oliva en spray"
+    ],
+    "preparacion": [
+      "Bate los huevos con sal y pimienta.",
+      "Rocía aceite en spray en sartén antiadherente.",
+      "Saltea cebolla y pimiento hasta tiernos.",
+      "Agrega espinacas y cocina hasta marchitar.",
+      "Vierte huevos batidos y espolvorea queso.",
+      "Cocina hasta que bordes estén firmes.",
+      "Dar vuelta con espátula y cocinar hasta cocido.",
+      "Servir caliente."
+    ],
+    "porcion": "150g",
+    "HC": "2g",
+    "Fibra": "2g"
+  },
+  {
+    "id": 18,
+    "titulo": "Batido de proteínas de bayas",
+    "ingredientes": [
+      "1 taza de bayas mixtas (fresas, arándanos, frambuesas)",
+      "1 taza de leche descremada o de almendras sin azúcar",
+      "1 cucharada de proteína en polvo sin azúcar añadida",
+      "1 cucharadita de semillas de chía"
+    ],
+    "preparacion": [
+      "En licuadora mezclar bayas, leche y proteína.",
+      "Licuar hasta obtener mezcla homogénea.",
+      "Servir en vaso y espolvorear chía.",
+      "Disfrutar."
+    ],
+    "porcion": "250ml",
+    "HC": "18g",
+    "Fibra": "4g"
+  },
+  {
+    "id": 19,
+    "titulo": "Tostadas de aguacate y huevo",
+    "ingredientes": [
+      "2 rebanadas de pan integral",
+      "1 aguacate maduro",
+      "2 huevos",
+      "Sal y pimienta al gusto",
+      "Opcional: hojas de espinaca o rúcula"
+    ],
+    "preparacion": [
+      "Tostar pan integral.",
+      "Aplastar aguacate con sal y pimienta.",
+      "Cocinar huevos a gusto.",
+      "Untar aguacate en pan tostado.",
+      "Colocar huevos encima.",
+      "Agregar opcionalmente espinaca o rúcula.",
+      "Servir."
+    ],
+    "porcion": "200g",
+    "HC": "28g",
+    "Fibra": "6g"
+  },
+  {
+    "id": 20,
+    "titulo": "Yogur griego con nueces y canela",
+    "ingredientes": [
+      "1 taza de yogur griego bajo en grasa",
+      "1/4 de taza de nueces picadas",
+      "1 cucharadita de canela en polvo",
+      "Opcional: 1 cucharadita de miel"
+    ],
+    "preparacion": [
+      "Colocar yogur en bowl.",
+      "Espolvorear nueces y canela.",
+      "Agregar miel opcional.",
+      "Mezclar bien y servir."
+    ],
+    "porcion": "200g",
+    "HC": "8g",
+    "Fibra": "2g"
+  },
+  {
+    "id": 21,
+    "titulo": "Panqueques integrales de plátano",
+    "ingredientes": [
+      "1 plátano maduro",
+      "2 huevos",
+      "1/2 taza de harina de trigo integral",
+      "1/2 cucharadita de polvo de hornear",
+      "1/4 de taza de leche descremada o de almendras",
+      "1 cucharadita de extracto de vainilla",
+      "Aceite de coco o spray para sartén"
+    ],
+    "preparacion": [
+      "Machacar plátano.",
+      "Agregar huevos y batir.",
+      "Incorporar harina y polvo de hornear.",
+      "Añadir leche y vainilla, mezclar homogéneo.",
+      "Engrasar sartén y verter 1/4 taza de mezcla.",
+      "Cocinar hasta burbujas, dar vuelta.",
+      "Servir con toppings a elección."
+    ],
+    "porcion": "2 panqueques (120g)",
+    "HC": "30g",
+    "Fibra": "5g"
+  },
+  {
+    "id": 22,
+    "titulo": "Tortilla de espinacas y queso bajo en grasa",
+    "ingredientes": [
+      "2 huevos",
+      "1 taza de espinacas frescas picadas",
+      "1/4 de taza de queso bajo en grasa rallado",
+      "1/4 de cebolla picada",
+      "1/4 de pimiento rojo picado",
+      "Sal y pimienta al gusto",
+      "Aceite de oliva en spray"
+    ],
+    "preparacion": [
+      "Bate los huevos con sal y pimienta.",
+      "Rocía aceite en spray en sartén antiadherente.",
+      "Saltea cebolla y pimiento hasta tiernos.",
+      "Agrega espinacas y cocina hasta marchitar.",
+      "Vierte huevos batidos y espolvorea queso.",
+      "Cocina hasta que bordes estén firmes.",
+      "Dar vuelta con espátula y cocinar hasta cocido.",
+      "Servir caliente."
+    ],
+    "porcion": "1 tortilla (150g)",
+    "HC": "5g",
+    "Fibra": "3g"
+  },
+  {
+    "id": 23,
+    "titulo": "Batido de proteínas de bayas",
+    "ingredientes": [
+      "1 taza de bayas mixtas (fresas, arándanos, frambuesas)",
+      "1 taza de leche descremada o de almendras sin azúcar",
+      "1 cucharada de proteína en polvo sin azúcar añadida",
+      "1 cucharadita de semillas de chía"
+    ],
+    "preparacion": [
+      "En licuadora mezclar bayas, leche y proteína.",
+      "Licuar hasta obtener mezcla homogénea.",
+      "Servir en vaso y espolvorear chía.",
+      "Disfrutar."
+    ],
+    "porcion": "1 vaso (250ml)",
+    "HC": "20g",
+    "Fibra": "6g"
+  },
+  {
+    "id": 24,
+    "titulo": "Tostadas de aguacate y huevo",
+    "ingredientes": [
+      "2 rebanadas de pan integral",
+      "1 aguacate maduro",
+      "2 huevos",
+      "Sal y pimienta al gusto",
+      "Opcional: hojas de espinaca o rúcula"
+    ],
+    "preparacion": [
+      "Tostar pan integral.",
+      "Aplastar aguacate con sal y pimienta.",
+      "Cocinar huevos a gusto.",
+      "Untar aguacate en pan tostado.",
+      "Colocar huevos encima.",
+      "Agregar opcionalmente espinaca o rúcula.",
+      "Servir."
+    ],
+    "porcion": "2 tostadas (180g)",
+    "HC": "28g",
+    "Fibra": "8g"
+  },
+  {
+    "id": 25,
+    "titulo": "Yogur griego con nueces y canela",
+    "ingredientes": [
+      "1 taza de yogur griego bajo en grasa",
+      "1/4 de taza de nueces picadas",
+      "1 cucharadita de canela en polvo",
+      "Opcional: 1 cucharadita de miel"
+    ],
+    "preparacion": [
+      "Colocar yogur en bowl.",
+      "Espolvorear nueces y canela.",
+      "Agregar miel opcional.",
+      "Mezclar bien y servir."
+    ],
+    "porcion": "1 taza (200g)",
+    "HC": "10g",
+    "Fibra": "2g"
+  },
+  {
+    "id": 26,
+    "titulo": "Filetes de pechuga de pollo rebozadas sobre judías",
+    "ingredientes": [
+      "4 filetes de pechuga de pollo",
+      "600 g de judías planas",
+      "2 zanahorias peladas enteras",
+      "2 cucharadas de sésamo",
+      "1 cucharada de pimentón dulce",
+      "3 cucharadas de aceite de oliva virgen extra",
+      "Sal gruesa"
+    ],
+    "preparacion": [
+      "Marinar pollo con aceite, pimentón y sal.",
+      "Hervir zanahorias y judías.",
+      "Pasar pollo por sésamo y freír.",
+      "Escurrir verduras y picar zanahoria.",
+      "Servir pollo sobre judías, rociar con aceite."
+    ],
+    "porcion": "1 filete con verduras (200g)",
+    "HC": "15g",
+    "Fibra": "5g"
+  },
+  {
+    "id": 27,
+    "titulo": "Ensalada de pollo y aguacate",
+    "ingredientes": [
+      "2 tazas de lechuga mixta",
+      "113 g de pollo a la parrilla",
+      "1/2 aguacate en cubos",
+      "1/4 taza de tomates cherry",
+      "1/4 taza de pepino",
+      "2 cucharadas de aderezo bajo en grasa"
+    ],
+    "preparacion": [
+      "Colocar lechuga en bowl.",
+      "Agregar pollo, aguacate, tomates y pepino.",
+      "Rociar aderezo.",
+      "Mezclar y servir."
+    ],
+    "porcion": "1 ensalada (250g)",
+    "HC": "10g",
+    "Fibra": "6g"
+  },
+  {
+    "id": 28,
+    "titulo": "Salmón al horno con vegetales asados",
+    "ingredientes": [
+      "113 g de salmón",
+      "1 taza de brócoli",
+      "1/2 pimiento rojo",
+      "1/2 calabacín",
+      "1 cucharada de aceite de oliva",
+      "Jugo de limón",
+      "Sal y pimienta"
+    ],
+    "preparacion": [
+      "Precalentar horno a 200°C.",
+      "Sazonar salmón con sal, pimienta y limón.",
+      "Colocar verduras en bandeja con aceite.",
+      "Hornear salmón y verduras 15-20 min.",
+      "Servir juntos."
+    ],
+    "porcion": "1 plato (200g)",
+    "HC": "8g",
+    "Fibra": "4g"
+  },
+  {
+    "id": 29,
+    "titulo": "Ensalada de brócoli",
+    "ingredientes": [
+      "350 g de brócoli",
+      "1 cebolla morada",
+      "1/2 pimiento rojo",
+      "100 g de queso cheddar",
+      "Sal y pimienta",
+      "3 cucharadas de aceite de oliva",
+      "3 cucharaditas de jugo de limón"
+    ],
+    "preparacion": [
+      "Cocer brócoli, enfriar y reservar.",
+      "Cortar verduras y mezclar con brócoli.",
+      "Agregar queso rallado, sal y pimienta.",
+      "Preparar vinagreta con limón y aceite.",
+      "Aliñar y mezclar."
+    ],
+    "porcion": "1 plato (250g)",
+    "HC": "12g",
+    "Fibra": "8g"
+  },
+  {
+    "id": 30,
+    "titulo": "Ensalada de Pollo a la Parrilla",
+    "ingredientes": [
+      "200 g de pechuga de pollo",
+      "2 tazas de lechuga mixta",
+      "1/2 pepino en rodajas",
+      "1 tomate en rodajas",
+      "1/4 cebolla roja",
+      "1 cucharada de aceite de oliva",
+      "Jugo de medio limón",
+      "Sal y pimienta"
+    ],
+    "preparacion": [
+      "Sazonar pollo y cocinar en parrilla 6-8 min por lado.",
+      "Reposar y cortar en tiras.",
+      "Mezclar vegetales en bowl.",
+      "Agregar pollo.",
+      "Preparar vinagreta y añadir.",
+      "Servir."
+    ],
+    "porcion": "1 plato (250g)",
+    "HC": "10g",
+    "Fibra": "5g"
+  },
+  {
+    "id": 31,
+    "titulo": "Pollo al Horno con Verduras",
+    "ingredientes": [
+      "2 pechugas de pollo",
+      "1 calabacín",
+      "1 pimiento rojo",
+      "1 cebolla",
+      "2 cucharadas de aceite de oliva",
+      "Jugo de medio limón",
+      "Sal y pimienta"
+    ],
+    "preparacion": [
+      "Precalentar horno a 200°C.",
+      "Colocar pollo en bandeja y sazonar.",
+      "Mezclar verduras con aceite y distribuir.",
+      "Hornear 25-30 min.",
+      "Servir."
+    ],
+    "porcion": "2 porciones (350g)",
+    "HC": "12g",
+    "Fibra": "5g"
+  },
+  {
+    "id": 32,
+    "titulo": "Burrito de atún",
+    "ingredientes": [
+      "2 filetes de atún",
+      "2 tortillas grandes",
+      "200 ml de salsa de soya",
+      "2 limones",
+      "Sal, pimienta y ajo",
+      "200 g de cebolla picada",
+      "4 cucharadas de aceite de oliva"
+    ],
+    "preparacion": [
+      "Cortar atún en cubos pequeños.",
+      "Sofreír atún con cebolla en aceite.",
+      "Agregar salsa, limón y condimentos.",
+      "Colocar en tortillas y enrollar."
+    ],
+    "porcion": "2 burritos (400g)",
+    "HC": "40g",
+    "Fibra": "6g"
+  },
+  {
+    "id": 33,
+    "titulo": "Ensalada de pollo y aguacate (variante)",
+    "ingredientes": [
+      "2 tazas de lechuga mixta",
+      "113 g de pollo a la parrilla",
+      "1/2 aguacate",
+      "1/4 taza de tomates cherry",
+      "1/4 taza de pepino",
+      "2 cucharadas de aderezo bajo en grasa"
+    ],
+    "preparacion": [
+      "Colocar lechuga como base.",
+      "Añadir pollo, aguacate, tomates y pepino.",
+      "Rociar aderezo.",
+      "Mezclar suavemente."
+    ],
+    "porcion": "1 ensalada (250g)",
+    "HC": "10g",
+    "Fibra": "6g"
+  },
+  {
+    "id": 34,
+    "titulo": "Zapallitos rellenos",
+    "ingredientes": [
+      "6 zapallitos",
+      "200 g de carne picada",
+      "2 cebollas",
+      "2 dientes de ajo",
+      "1 zanahoria",
+      "1/2 morrón",
+      "Queso fresco o rallado"
+    ],
+    "preparacion": [
+      "Hervir zapallitos 20 min.",
+      "Sofreír ajo, morrón, cebolla y carne.",
+      "Agregar zanahoria rallada y condimentos.",
+      "Vaciar zapallitos y mezclar pulpa con relleno.",
+      "Rellenar y hornear 20 min.",
+      "Agregar queso antes de retirar."
+    ],
+    "porcion": "6 zapallitos rellenos (400g)",
+    "HC": "20g",
+    "Fibra": "8g"
+  },
+  {
+    "id": 35,
+    "titulo": "Tarta de zapallitos y sardina",
+    "ingredientes": [
+      "200 g cebolla",
+      "30 g grasa de cerdo",
+      "500 g zapallitos",
+      "2 cucharadas de chía",
+      "100 ml agua (para hidratar chía, opcional)",
+      "80 g mozzarella",
+      "50 g crema de leche",
+      "1 lata de sardina",
+      "200 g ricota",
+      "3 huevos",
+      "1 cucharadita de cúrcuma",
+      "1 cucharadita de pimentón dulce",
+      "1 cucharadita de ajo deshidratado",
+      "Sal fina"
+    ],
+    "preparacion": [
+      "Sofreír cebolla con grasa y especias.",
+      "Licuar ricota con huevos y crema.",
+      "Agregar zapallitos en cubos y cocinar.",
+      "Integrar sardina, queso y demás ingredientes.",
+      "Colocar en molde aceitado con papel.",
+      "Hornear 200°C por 1 hora.",
+      "Desmoldar frío."
+    ],
+    "porcion": "6 porciones (150g c/u)",
+    "HC": "12g",
+    "Fibra": "4g"
+  }
+]

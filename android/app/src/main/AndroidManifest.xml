@@ -1,0 +1,66 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ===========================
+         Aplicación
+         =========================== -->
+    <application
+        android:label="insubite"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <!-- ===========================
+             CLAVE DE API DE ANDROID
+             Aquí agregamos la clave para Google Maps u otros servicios de Google
+             android:name debe ser EXACTAMENTE "com.google.android.geo.API_KEY"
+             android:value es tu clave de API
+             =========================== -->
+        <meta-data
+    android:name="com.google.android.geo.API_KEY"
+    android:value="AIzaSyBUb2ZdI2VHbTtwONv-XYIzflTt3jL1994"/>
+
+
+        <!-- ===========================
+             Actividad principal
+             =========================== -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- Tema normal durante la carga -->
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+            />
+
+            <!-- Intent filter para abrir la app desde el launcher -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Flutter embedding -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
+    </application>
+
+    <!-- ===========================
+         Queries
+         Necesario para algunos plugins de Flutter que procesan texto
+         =========================== -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+
+</manifest>

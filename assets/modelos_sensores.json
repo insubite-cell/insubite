@@ -1,0 +1,13 @@
+[
+  { "id": 1, "marca_id": 1, "nombre": "G6", "vigencia_dias": 10 },
+  { "id": 2, "marca_id": 1, "nombre": "G7", "vigencia_dias": 10 },
+  { "id": 3, "marca_id": 2, "nombre": "FreeStyle Libre", "vigencia_dias": 14 },
+  { "id": 4, "marca_id": 2, "nombre": "FreeStyle Libre 2", "vigencia_dias": 14 },
+  { "id": 5, "marca_id": 2, "nombre": "FreeStyle Libre 3", "vigencia_dias": 14 },
+  { "id": 6, "marca_id": 3, "nombre": "Guardian Sensor 3", "vigencia_dias": 7 },
+  { "id": 7, "marca_id": 3, "nombre": "MiniMed 780G Sensor", "vigencia_dias": 7 },
+  { "id": 8, "marca_id": 4, "nombre": "Eversense XL", "vigencia_dias": 180 },
+  { "id": 9, "marca_id": 5, "nombre": "Eversense Implantable", "vigencia_dias": 90 },
+  { "id": 10, "marca_id": 6, "nombre": "Accu-Chek Insight", "vigencia_dias": 14 },
+  { "id": 12, "marca_id": 7, "nombre": "GlucoMen Day CGM", "vigencia_dias": 14 }
+]
