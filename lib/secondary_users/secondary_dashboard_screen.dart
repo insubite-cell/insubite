@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:insubite_new/Insumos/insumos_dashboard_screen.dart';
 import 'package:insubite_new/design_system/buttons/app_button.dart';
+import 'package:insubite_new/sensor_bomba/dahsboard_glde.dart';
 
 // DESIGN SYSTEM
 import '/design_system/cards/metric_card.dart';
@@ -352,13 +354,19 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
                                 context, '/food_explorer'),
                           ),
                           IconCard(
-                            key: const ValueKey('grid_dispositivo'),
-                            icon: Icons.devices,
-                            title: 'Dispositivo',
-                            subtitle: 'Ver y configurar',
-                            onTap: () => Navigator.pushNamed(
-                                context, '/glucose_device'),
-                          ),
+                              icon: Icons.devices,
+                              title: 'Dispositivo',
+                              subtitle: 'Ver y configurar',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const DevicesScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+
                           IconCard(
                             key: const ValueKey('grid_reporte'),
                             icon: Icons.bar_chart,
@@ -376,13 +384,19 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
                                 context, '/recipes_explorer'),
                           ),
                           IconCard(
-                            key: const ValueKey('grid_insumos'),
-                            icon: Icons.medical_services,
+                            icon: Icons.medical_services_outlined,
                             title: 'Insumos',
-                            subtitle: 'Registro de retiros',
-                            onTap: () =>
-                                Navigator.pushNamed(context, '/insumos'),
+                            subtitle: 'Gestión de insumos',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const InsumosDashboardScreen(),
+                                ),
+                              );
+                            },
                           ),
+
                         ],
                       ),
                     ],

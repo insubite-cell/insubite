@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
+//import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -72,7 +72,9 @@ class AuthService {
 
       return user;
     } catch (e) {
-      print("Error login con Google: $e");
+      if (kDebugMode) {
+        print("Error login con Google: $e");
+      }
       return null;
     }
   }

@@ -3,8 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'insulin_report_screen.dart';
 import 'history_report_screen.dart';
-import 'insumos_report_screen.dart';
-
 import '/../design_system/cards/list_nav_card.dart';
 
 class ReportsHomeScreen extends StatefulWidget {
@@ -47,16 +45,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
               subtitle:
                   "Distribución por desayuno, almuerzo, cena y merienda.",
               onTap: () => _navigateTo(const HistoryReportScreen()),
-            ),
-
-            SizedBox(height: 12.h),
-
-            ListNavCard(
-              icon: Icons.medical_services,
-              title: "Insumos",
-              subtitle: "Consulta el historial de insumos retirados",
-              onTap: () =>
-                  _navigateTo(const InsumosReportScreenSimple()),
             ),
           ],
         ),

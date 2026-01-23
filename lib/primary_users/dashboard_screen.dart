@@ -6,8 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:insubite_new/Insumos/insumos_dashboard_screen.dart';
 import 'package:insubite_new/design_system/buttons/app_button.dart';
-
+import 'package:insubite_new/sensor_bomba/dahsboard_glde.dart';
 import '../group_food/food/food_preview_screen.dart';
 import '../design_system/cards/metric_card.dart';
 import '../design_system/cards/icon_card.dart';
@@ -276,13 +277,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       onTap: () =>
                           Navigator.pushNamed(context, '/food_explorer'),
                     ),
-                    IconCard(
-                      icon: Icons.devices,
-                      title: 'Dispositivo',
-                      subtitle: 'Ver y configurar',
-                      onTap: () =>
-                          Navigator.pushNamed(context, '/glucose_device'),
-                    ),
+                   IconCard(
+                    icon: Icons.devices,
+                    title: 'Dispositivo',
+                    subtitle: 'Ver y configurar',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DevicesScreen(),
+                        ),
+                      );
+                    },
+                  ),
+
                     IconCard(
                       icon: Icons.bar_chart,
                       title: 'Reporte',
@@ -298,12 +306,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Navigator.pushNamed(context, '/recipes_explorer'),
                     ),
                     IconCard(
-                      icon: Icons.medical_services,
-                      title: 'Insumos',
-                      subtitle: 'Registro de retiros',
-                      onTap: () =>
-                          Navigator.pushNamed(context, '/insumos'),
-                    ),
+                    icon: Icons.medical_services_outlined,
+                    title: 'Insumos',
+                    subtitle: 'Gestión de insumos',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const InsumosDashboardScreen(),
+                        ),
+                      );
+                    },
+                  ),
+
                     IconCard(
                       icon: Icons.camera_alt,
                       title: 'Tomar foto',

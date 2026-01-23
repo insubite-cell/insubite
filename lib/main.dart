@@ -18,7 +18,7 @@ import 'primary_users/register_screen.dart';
 // Perfil
 import 'profile/profile_screen.dart';
 import 'profile/medical_data_screen.dart';
-import 'profile/glucose_device_screen.dart';
+import 'sensor_bomba/glucose_device_screen.dart';
 import 'profile/shared_screen.dart';
 import 'Insumos/insumos_screen.dart';
 
@@ -28,7 +28,7 @@ import 'static/report/reports_home_screen.dart';
 import 'static/report/history_report_screen.dart';
 import 'static/report/insulin_report_screen.dart';
 import 'static/report_info_screen.dart';
-import 'static/report/insumos_report_screen.dart';
+import 'Insumos/insumos_report_screen.dart';
 
 // Dashboards
 import 'static/dashbord/dashbord_nutrientes_screen.dart';
@@ -144,7 +144,7 @@ class MyApp extends StatelessWidget {
                 '/report_info': (_) => const ReportesInfoScreen(),
                 '/history_report': (_) => const HistoryReportScreen(),
                 '/insulin_report': (_) => const InsulinReportScreen(),
-                '/insumos_reportes': (_) => const InsumosReportScreenSimple(),
+                '/insumos_reportes': (_) => const InsumosHistoryScreen(),
 
                 '/dashbord_nutrientes': (_) => const DashboardNutrientesScreen(),
                 '/static_dashbord': (_) => const StaticDashbordScreen(),
