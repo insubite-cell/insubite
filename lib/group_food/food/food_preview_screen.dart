@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FoodPreviewScreen extends StatefulWidget {
   final File image;
@@ -12,21 +14,97 @@ class FoodPreviewScreen extends StatefulWidget {
 
 class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
   bool _loading = true;
-  List<String> alimentos = [];
+  List<String> alimentosDetectados = [];
+
+  double totalCarbs = 0;
+  double totalProtein = 0;
+  double totalFat = 0;
+
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  Map<String, Map<String, double>> favoritos = {};
+  Map<String, Map<String, double>> maestro = {};
 
   @override
   void initState() {
     super.initState();
-    _reconocerAlimentos();
+    _inicializarDatos();
   }
 
-  Future<void> _reconocerAlimentos() async {
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> _inicializarDatos() async {
+    setState(() => _loading = true);
 
-    setState(() {
-      alimentos = ['Pasta', 'Queso', 'Salsa'];
-      _loading = false;
-    });
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    final uid = user.uid;
+
+    // 1️⃣ Cargar favoritos del usuario
+    favoritos = await _loadFavoritos(uid);
+
+    // 2️⃣ Cargar alimentos maestro
+    maestro = await _loadAlimentosMaestro();
+
+    // 3️⃣ Simular detección de alimentos (a reemplazar por tu modelo)
+    await Future.delayed(const Duration(seconds: 2));
+    alimentosDetectados = ['Matarazzo Fideos Tirabuzón', 'Queso'];
+
+    // 4️⃣ Calcular macros
+    _calcularMacros();
+
+    setState(() => _loading = false);
+  }
+
+  Future<Map<String, Map<String, double>>> _loadFavoritos(String uid) async {
+    final snapshot = await firestore.collection('usuarios/$uid/favoritos').get();
+    final Map<String, Map<String, double>> map = {};
+
+    for (var doc in snapshot.docs) {
+      final data = doc.data();
+      final nombre = data['nombre'] as String?;
+      if (nombre != null) {
+        map[nombre] = {
+          'carbs': (data['carbohidratos'] ?? 0).toDouble(),
+          'protein': (data['proteinas'] ?? 0).toDouble(),
+          'fat': (data['grasas'] ?? 0).toDouble(),
+        };
+      }
+    }
+    return map;
+  }
+
+  Future<Map<String, Map<String, double>>> _loadAlimentosMaestro() async {
+    final snapshot = await firestore.collection('alimentos_maestro').get();
+    final Map<String, Map<String, double>> map = {};
+
+    for (var doc in snapshot.docs) {
+      final data = doc.data();
+      final nombre = data['nombre'] as String?;
+      if (nombre != null) {
+        map[nombre] = {
+          'carbs': (data['carbohidratos'] ?? 0).toDouble(),
+          'protein': (data['proteinas'] ?? 0).toDouble(),
+          'fat': (data['grasas'] ?? 0).toDouble(),
+        };
+      }
+    }
+    return map;
+  }
+
+  void _calcularMacros() {
+    totalCarbs = 0;
+    totalProtein = 0;
+    totalFat = 0;
+
+    for (var alimento in alimentosDetectados) {
+      final macros = favoritos[alimento] ?? maestro[alimento];
+      if (macros != null) {
+        totalCarbs += macros['carbs']!;
+        totalProtein += macros['protein']!;
+        totalFat += macros['fat']!;
+      }
+    }
   }
 
   @override
@@ -45,9 +123,7 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
               fit: BoxFit.cover,
             ),
           ),
-
           const SizedBox(height: 16),
-
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
@@ -61,10 +137,9 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 12),
-
                         Wrap(
                           spacing: 8,
-                          children: alimentos
+                          children: alimentosDetectados
                               .map(
                                 (a) => Chip(
                                   label: Text(a),
@@ -73,19 +148,16 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
                               )
                               .toList(),
                         ),
-
                         const SizedBox(height: 24),
                         const Divider(),
-
                         const Text(
-                          'Estadísticas (próximamente)',
+                          'Estadísticas',
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-
                         const SizedBox(height: 12),
-                        _StatRow(label: 'Carbohidratos', value: '— g'),
-                        _StatRow(label: 'Proteínas', value: '— g'),
-                        _StatRow(label: 'Grasas', value: '— g'),
+                        _StatRow(label: 'Carbohidratos', value: '${totalCarbs.toStringAsFixed(1)} g'),
+                        _StatRow(label: 'Proteínas', value: '${totalProtein.toStringAsFixed(1)} g'),
+                        _StatRow(label: 'Grasas', value: '${totalFat.toStringAsFixed(1)} g'),
                       ],
                     ),
                   ),
