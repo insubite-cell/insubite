@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:insubite_new/service/auth_service.dart';
+import 'package:insubite/service/auth_service.dart';
 
 import '../primary_users/login_form_screen.dart';
 import '../secondary_users/secondary_login_screen.dart';

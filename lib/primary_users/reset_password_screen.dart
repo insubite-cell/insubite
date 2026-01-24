@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:insubite_new/design_system/buttons/app_button.dart';
-import 'package:insubite_new/design_system/inputs/app_text_field.dart';
+import 'package:insubite/design_system/buttons/app_button.dart';
+import 'package:insubite/design_system/inputs/app_text_field.dart';
 import 'login_form_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {

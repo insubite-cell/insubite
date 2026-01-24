@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:insubite_new/design_system/inputs/app_text_field.dart';
-import 'package:insubite_new/design_system/cards/app_card.dart';
-import 'package:insubite_new/design_system/cards/list_nav_card.dart';
+import 'package:insubite/design_system/inputs/app_text_field.dart';
+import 'package:insubite/design_system/cards/app_card.dart';
+import 'package:insubite/design_system/cards/list_nav_card.dart';
 
 class InsulinPumpScreen extends StatefulWidget {
   const InsulinPumpScreen({super.key});

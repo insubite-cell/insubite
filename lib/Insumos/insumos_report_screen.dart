@@ -84,11 +84,14 @@ class _InsumosHistoryScreenState extends State<InsumosHistoryScreen> {
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar historial: $e')),
       );
     }
+
   }
 
   @override

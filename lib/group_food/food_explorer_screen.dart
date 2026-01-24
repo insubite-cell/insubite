@@ -128,7 +128,7 @@ class DashboardScreenFood extends StatelessWidget {
               title: "Alimentos favoritos",
               subtitle: "Accede a tu lista personalizada",
               onTap: () {
-                Navigator.pushNamed(context, '/food_favorite');
+                Navigator.pushNamed(context, '/favoritos');
               },
             ),
           ],

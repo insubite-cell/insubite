@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 
 class FoodPreviewScreen extends StatefulWidget {
   final File image;
@@ -29,10 +30,10 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
   @override
   void initState() {
     super.initState();
-    _inicializarDatos();
+    _procesarImagen();
   }
 
-  Future<void> _inicializarDatos() async {
+  Future<void> _procesarImagen() async {
     setState(() => _loading = true);
 
     final user = auth.currentUser;
@@ -40,17 +41,14 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
 
     final uid = user.uid;
 
-    // 1️⃣ Cargar favoritos del usuario
+    // 1️⃣ Cargar favoritos y maestro
     favoritos = await _loadFavoritos(uid);
-
-    // 2️⃣ Cargar alimentos maestro
     maestro = await _loadAlimentosMaestro();
 
-    // 3️⃣ Simular detección de alimentos (a reemplazar por tu modelo)
-    await Future.delayed(const Duration(seconds: 2));
-    alimentosDetectados = ['Matarazzo Fideos Tirabuzón', 'Queso'];
+    // 2️⃣ Detectar alimentos usando ML Kit
+    alimentosDetectados = await _detectarAlimentos(widget.image);
 
-    // 4️⃣ Calcular macros
+    // 3️⃣ Calcular macros
     _calcularMacros();
 
     setState(() => _loading = false);
@@ -64,10 +62,10 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
       final data = doc.data();
       final nombre = data['nombre'] as String?;
       if (nombre != null) {
-        map[nombre] = {
-          'carbs': (data['carbohidratos'] ?? 0).toDouble(),
-          'protein': (data['proteinas'] ?? 0).toDouble(),
-          'fat': (data['grasas'] ?? 0).toDouble(),
+        map[nombre.toLowerCase()] = {
+          'carbs': (data['carbohidratos']?['cantidad'] ?? 0).toDouble(),
+          'protein': (data['proteinas']?['cantidad'] ?? 0).toDouble(),
+          'fat': (data['grasas']?['cantidad'] ?? 0).toDouble(),
         };
       }
     }
@@ -82,14 +80,26 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
       final data = doc.data();
       final nombre = data['nombre'] as String?;
       if (nombre != null) {
-        map[nombre] = {
-          'carbs': (data['carbohidratos'] ?? 0).toDouble(),
-          'protein': (data['proteinas'] ?? 0).toDouble(),
-          'fat': (data['grasas'] ?? 0).toDouble(),
+        map[nombre.toLowerCase()] = {
+          'carbs': (data['carbohidratos']?['cantidad'] ?? 0).toDouble(),
+          'protein': (data['proteinas']?['cantidad'] ?? 0).toDouble(),
+          'fat': (data['grasas']?['cantidad'] ?? 0).toDouble(),
         };
       }
     }
     return map;
+  }
+
+  Future<List<String>> _detectarAlimentos(File image) async {
+    final inputImage = InputImage.fromFile(image);
+    final options = ImageLabelerOptions(confidenceThreshold: 0.5);
+    final labeler = ImageLabeler(options: options);
+
+    final List<ImageLabel> labels = await labeler.processImage(inputImage);
+    await labeler.close();
+
+    // Devolver solo los nombres detectados
+    return labels.map((l) => l.label.toLowerCase()).toList();
   }
 
   void _calcularMacros() {
@@ -98,6 +108,7 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
     totalFat = 0;
 
     for (var alimento in alimentosDetectados) {
+      // primero favoritos, si no está maestro
       final macros = favoritos[alimento] ?? maestro[alimento];
       if (macros != null) {
         totalCarbs += macros['carbs']!;
@@ -113,7 +124,6 @@ class _FoodPreviewScreenState extends State<FoodPreviewScreen> {
       appBar: AppBar(title: const Text('Análisis del plato')),
       body: Column(
         children: [
-          // Imagen principal
           ClipRRect(
             borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
             child: Image.file(

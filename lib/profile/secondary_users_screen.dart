@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:insubite_new/design_system/buttons/app_button.dart';
+import 'package:insubite/design_system/buttons/app_button.dart';
 
 class SecondaryUsersScreen extends StatelessWidget {
   const SecondaryUsersScreen({super.key});

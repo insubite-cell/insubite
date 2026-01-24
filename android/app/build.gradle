@@ -10,13 +10,18 @@ android {
     ndkVersion flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
         coreLibraryDesugaringEnabled true
     }
-
+        configurations.all {
+                resolutionStrategy {
+                    force 'com.google.firebase:firebase-iid:21.1.0'  // versión compatible
+                    force 'com.google.firebase:firebase-messaging:25.0.1'
+                }
+            }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '17'
     }
 
     defaultConfig {
@@ -44,6 +49,11 @@ android {
             signingConfig signingConfigs.release
         }
     }
+}
+
+repositories {
+    google()
+    mavenCentral()
 }
 
 dependencies {

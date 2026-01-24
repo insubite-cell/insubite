@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'insulin_pump_screen.dart';
-import 'package:insubite_new/design_system/cards/list_nav_card.dart';
-import 'package:insubite_new/sensor_bomba/glucose_device_screen.dart';
+import 'package:insubite/design_system/cards/list_nav_card.dart';
+import 'package:insubite/sensor_bomba/glucose_device_screen.dart';
 
 class DevicesScreen extends StatelessWidget {
   const DevicesScreen({super.key});

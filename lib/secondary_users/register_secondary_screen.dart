@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:uuid/uuid.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import '../design_system/inputs/app_text_field.dart';
 import '../design_system/buttons/app_button.dart';
 import 'validate_principal_screen.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 
 class RegisterSecondaryScreen extends StatefulWidget {
   const RegisterSecondaryScreen({super.key});
@@ -18,22 +17,17 @@ class RegisterSecondaryScreen extends StatefulWidget {
       _RegisterSecondaryScreenState();
 }
 
-class _RegisterSecondaryScreenState
-    extends State<RegisterSecondaryScreen> {
+class _RegisterSecondaryScreenState extends State<RegisterSecondaryScreen> {
   final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final TextEditingController emailController =
-      TextEditingController();
-  final TextEditingController passwordController =
-      TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
-  final TextEditingController nameController =
-      TextEditingController();
-  final TextEditingController apellidoController =
-      TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController apellidoController = TextEditingController();
 
   bool _loading = false;
   bool _passwordVisible = false;
@@ -49,9 +43,6 @@ class _RegisterSecondaryScreenState
     super.dispose();
   }
 
-  /* ============================================================
-   *  GUARDADO UNIFICADO DE USUARIO SECUNDARIO
-   * ============================================================ */
   Future<void> _saveSecondaryUser({
     required User user,
     required String email,
@@ -87,8 +78,7 @@ class _RegisterSecondaryScreenState
     setState(() => _loading = true);
 
     try {
-      final userCredential =
-          await _auth.createUserWithEmailAndPassword(
+      final userCredential = await _auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
@@ -105,29 +95,20 @@ class _RegisterSecondaryScreenState
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content:
-                Text('Usuario secundario registrado correctamente'),
+            content: Text('Usuario secundario registrado correctamente'),
           ),
         );
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => ValidatePrincipalScreen(),
-          ),
+          MaterialPageRoute(builder: (_) => ValidatePrincipalScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {
       String msg = 'Error desconocido';
-      if (e.code == 'email-already-in-use') {
-        msg = 'El email ya está en uso';
-      }
-      if (e.code == 'weak-password') {
-        msg = 'La contraseña es muy débil';
-      }
-      if (e.code == 'invalid-email') {
-        msg = 'Email inválido';
-      }
+      if (e.code == 'email-already-in-use') msg = 'El email ya está en uso';
+      if (e.code == 'weak-password') msg = 'La contraseña es muy débil';
+      if (e.code == 'invalid-email') msg = 'Email inválido';
 
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -138,167 +119,153 @@ class _RegisterSecondaryScreenState
     }
   }
 
-  /* ============================================================
-   *  REGISTRO CON GOOGLE (CORREGIDO)
-   * ============================================================ */
-  Future<void> _registerWithGoogle() async {
-    setState(() => _loading = true);
+    Future<void> registerWithGoogle() async {
+  setState(() => _loading = true);
 
-    try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        setState(() => _loading = false);
-        return;
-      }
+  try {
+    final googleSignIn = GoogleSignIn.instance;
+    await googleSignIn.initialize(
+      clientId: kIsWeb
+          ? '881766632299-g7o1cv9icee6smkuhacm4haknevlj40n.apps.googleusercontent.com'
+          : null,
+    );
+    final account = await googleSignIn.authenticate(
+      scopeHint: ['email', 'profile'],
+    );
 
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+    // 3️⃣ Obtener tokens
+    final auth = account.authentication;
+    final idToken = auth.idToken;
 
-      final userCredential =
-          await _auth.signInWithCredential(credential);
-
-      final user = userCredential.user;
-      final isNewUser =
-          userCredential.additionalUserInfo?.isNewUser ?? false;
-
-      if (user != null && isNewUser) {
-        final displayName = user.displayName ?? '';
-        final parts = displayName.split(' ');
-
-        final nombre = nameController.text.trim().isNotEmpty
-            ? nameController.text.trim()
-            : (parts.isNotEmpty ? parts.first : '');
-
-        final apellido =
-            apellidoController.text.trim().isNotEmpty
-                ? apellidoController.text.trim()
-                : (parts.length > 1
-                    ? parts.sublist(1).join(' ')
-                    : '');
-
-        await _saveSecondaryUser(
-          user: user,
-          email: user.email ?? '',
-          nombre: nombre,
-          apellido: apellido,
-        );
-      }
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Usuario secundario registrado con Google'),
-        ),
-      );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ValidatePrincipalScreen(),
-        ),
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error Google: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
+    if (idToken == null) {
+      setState(() => _loading = false);
+      return;
     }
-  }
 
-  /* ============================================================
-   *  UI
-   * ============================================================ */
+    // 4️⃣ Credencial Firebase
+    final credential = GoogleAuthProvider.credential(
+      idToken: idToken,
+    );
+
+    // 5️⃣ Login Firebase
+    final userCredential =
+        await _auth.signInWithCredential(credential);
+
+    final user = userCredential.user;
+    final isNewUser =
+        userCredential.additionalUserInfo?.isNewUser ?? false;
+
+    if (user != null && isNewUser) {
+      final displayName = user.displayName ?? '';
+      final parts = displayName.split(' ');
+
+      final nombre = nameController.text.trim().isNotEmpty
+          ? nameController.text.trim()
+          : (parts.isNotEmpty ? parts.first : '');
+
+      final apellido = apellidoController.text.trim().isNotEmpty
+          ? apellidoController.text.trim()
+          : (parts.length > 1 ? parts.sublist(1).join(' ') : '');
+
+      await _saveSecondaryUser(
+        user: user,
+        email: user.email ?? '',
+        nombre: nombre,
+        apellido: apellido,
+      );
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Usuario secundario registrado con Google'),
+      ),
+    );
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => ValidatePrincipalScreen()),
+    );
+  } catch (e, st) {
+    if (kDebugMode) {
+      print('Error Google SignIn: $e');
+      print(st);
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error Google: $e')),
+      );
+    }
+  } finally {
+    if (mounted) setState(() => _loading = false);
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       builder: (_, _) => Scaffold(
-        appBar:
-            AppBar(title: const Text('Registro Secundario')),
+        appBar: AppBar(title: const Text('Registro Secundario')),
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: 24.w,
-              vertical: 24.h,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
             child: Form(
               key: _formKey,
               child: Column(
                 children: [
                   _NombreField(controller: nameController),
                   SizedBox(height: 16.h),
-                  _ApellidoField(
-                      controller: apellidoController),
+                  _ApellidoField(controller: apellidoController),
                   SizedBox(height: 16.h),
                   AppTextField(
                     controller: emailController,
                     label: 'Email',
-                    keyboardType:
-                        TextInputType.emailAddress,
+                    keyboardType: TextInputType.emailAddress,
                     validator: (v) =>
-                        v == null || !v.contains('@')
-                            ? 'Email inválido'
-                            : null,
+                        v == null || !v.contains('@') ? 'Email inválido' : null,
                   ),
                   SizedBox(height: 16.h),
                   _PasswordField(
                     controller: passwordController,
                     visible: _passwordVisible,
-                    onToggle: () => setState(
-                        () => _passwordVisible =
-                            !_passwordVisible),
+                    onToggle: () =>
+                        setState(() => _passwordVisible = !_passwordVisible),
                     label: 'Contraseña',
                   ),
                   SizedBox(height: 16.h),
                   _PasswordField(
-                    controller:
-                        confirmPasswordController,
+                    controller: confirmPasswordController,
                     visible: _confirmPasswordVisible,
-                    onToggle: () => setState(() =>
-                        _confirmPasswordVisible =
-                            !_confirmPasswordVisible),
+                    onToggle: () => setState(
+                        () => _confirmPasswordVisible = !_confirmPasswordVisible),
                     label: 'Confirmar Contraseña',
                     validator: (v) =>
-                        v != passwordController.text
-                            ? 'No coinciden'
-                            : null,
+                        v != passwordController.text ? 'No coinciden' : null,
                   ),
                   SizedBox(height: 24.h),
                   _loading
                       ? Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 24.h),
-                          child:
-                              const CircularProgressIndicator(),
+                          padding: EdgeInsets.symmetric(vertical: 24.h),
+                          child: const CircularProgressIndicator(),
                         )
                       : Column(
                           children: [
                             AppButton(
-                              label:
-                                  'Registrarse con Email',
+                              label: 'Registrarse con Email',
                               expanded: true,
                               selected: true,
-                              onPressed:
-                                  _registerWithEmail,
+                              onPressed: _registerWithEmail,
                             ),
                             SizedBox(height: 12.h),
                             AppButton(
-                              label:
-                                  'Registrarse con Google',
+                              label: 'Registrarse con Google',
                               expanded: true,
                               outlined: true,
-                              leading:
-                                  const Icon(Icons.login),
-                              onPressed:
-                                  _registerWithGoogle,
+                              leading: const Icon(Icons.login),
+                              onPressed: registerWithGoogle,
                             ),
                           ],
                         ),
@@ -323,8 +290,7 @@ class _NombreField extends StatelessWidget {
     return AppTextField(
       controller: controller,
       label: 'Nombre',
-      validator: (v) =>
-          v == null || v.isEmpty ? 'Ingrese nombre' : null,
+      validator: (v) => v == null || v.isEmpty ? 'Ingrese nombre' : null,
     );
   }
 }
@@ -338,9 +304,7 @@ class _ApellidoField extends StatelessWidget {
     return AppTextField(
       controller: controller,
       label: 'Apellido',
-      validator: (v) => v == null || v.isEmpty
-          ? 'Ingrese apellido'
-          : null,
+      validator: (v) => v == null || v.isEmpty ? 'Ingrese apellido' : null,
     );
   }
 }
@@ -366,13 +330,9 @@ class _PasswordField extends StatelessWidget {
       controller: controller,
       label: label,
       obscureText: !visible,
-      validator: validator ??
-          (v) => v == null || v.length < 6
-              ? 'Mínimo 6 caracteres'
-              : null,
+      validator: validator ?? (v) => v == null || v.length < 6 ? 'Mínimo 6 caracteres' : null,
       suffixIcon: IconButton(
-        icon: Icon(
-            visible ? Icons.visibility : Icons.visibility_off),
+        icon: Icon(visible ? Icons.visibility : Icons.visibility_off),
         onPressed: onToggle,
       ),
     );

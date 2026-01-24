@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:insubite_new/design_system/inputs/app_text_field.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:insubite/design_system/inputs/app_text_field.dart';
+import 'package:insubite/service/auth_service.dart';
 import '../design_system/buttons/app_button.dart';
 import 'register_screen.dart';
 import 'login_welcome_screen.dart';
@@ -32,7 +31,6 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
   }
 
   /* ================== PRINCIPAL UID ================== */
-
   Future<void> _setPrincipalUid(String userId) async {
     final userDoc = await FirebaseFirestore.instance
         .collection('usuarios')
@@ -49,7 +47,6 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
   }
 
   /* ================== LOGIN EMAIL ================== */
-
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -82,28 +79,18 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
   }
 
   /* ================== LOGIN GOOGLE ================== */
-
   Future<void> _loginWithGoogle() async {
     setState(() => _loading = true);
 
     try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
+      final user = await AuthService().signInWithGoogle();
+      if (user == null) {
         setState(() => _loading = false);
         return;
       }
 
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-
-      final userId = userCredential.user!.uid;
-      await _setPrincipalUid(userId);
+      // Guardamos el UID
+      await _setPrincipalUid(user.uid);
 
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -116,13 +103,18 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
           SnackBar(content: Text(e.message ?? 'Error con Google Sign-In')),
         );
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error inesperado: $e')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   /* ================== UI ================== */
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -138,33 +130,27 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: 30.h),
-
                 Icon(Icons.login, size: 120.w),
-
                 SizedBox(height: 20.h),
 
                 /* ===== EMAIL ===== */
                 AppTextField(
-                controller: _emailController,
-                label: 'Email',
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Ingrese email' : null,
-              ),
-
-
+                  controller: _emailController,
+                  label: 'Email',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Ingrese email' : null,
+                ),
                 SizedBox(height: 16.h),
 
                 /* ===== PASSWORD ===== */
                 AppTextField(
-                controller: _passwordController,
-                label: 'Contraseña',
-                obscureText: true,
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Ingrese contraseña' : null,
-              ),
-
-
+                  controller: _passwordController,
+                  label: 'Contraseña',
+                  obscureText: true,
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Ingrese contraseña' : null,
+                ),
                 SizedBox(height: 28.h),
 
                 _loading
@@ -178,7 +164,6 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                             expanded: true,
                             onPressed: _login,
                           ),
-
                           SizedBox(height: 16.h),
 
                           /* ===== RESET PASSWORD ===== */
@@ -190,13 +175,11 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const ResetPasswordScreen(),
+                                  builder: (_) => const ResetPasswordScreen(),
                                 ),
                               );
                             },
                           ),
-
                           SizedBox(height: 16.h),
 
                           /* ===== GOOGLE ===== */
@@ -207,7 +190,6 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                             leading: const Icon(Icons.login),
                             onPressed: _loginWithGoogle,
                           ),
-
                           SizedBox(height: 16.h),
 
                           /* ===== REGISTER ===== */

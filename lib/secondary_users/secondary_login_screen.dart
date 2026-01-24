@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:insubite_new/design_system/inputs/app_text_field.dart';
-
+import 'package:insubite/design_system/inputs/app_text_field.dart';
 import '../design_system/buttons/app_button.dart';
 import 'register_secondary_screen.dart';
 import 'validate_principal_screen.dart';
 import 'secondary_dashboard_screen.dart';
+import 'package:insubite/service/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SecondaryLoginScreen extends StatefulWidget {
   const SecondaryLoginScreen({super.key});
@@ -19,8 +18,7 @@ class SecondaryLoginScreen extends StatefulWidget {
 
 class _SecondaryLoginScreenState extends State<SecondaryLoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -32,20 +30,6 @@ class _SecondaryLoginScreenState extends State<SecondaryLoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  /* ================== LAST UPDATE ================== */
-
-  Future<void> _updateLastLogin(User user) async {
-    await FirebaseFirestore.instance
-        .collection('usuarios')
-        .doc(user.uid)
-        .set(
-      {
-        'lastUpdate': FieldValue.serverTimestamp(),
-      },
-      SetOptions(merge: true),
-    );
   }
 
   /* ================== REDIRECCIÓN ================== */
@@ -86,70 +70,55 @@ class _SecondaryLoginScreenState extends State<SecondaryLoginScreen> {
   /* ================== LOGIN EMAIL ================== */
 
   Future<void> _loginWithEmail() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _loading = true);
+  setState(() => _loading = true);
 
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+  final user = await _authService.signInWithEmail(
+    _emailController.text.trim(),
+    _passwordController.text.trim(),
+  );
 
-      final user = _auth.currentUser!;
-      await _updateLastLogin(user);
+  if (!mounted) return;
 
-      if (!mounted) return;
-      await _redirectAfterLogin(user);
-    } on FirebaseAuthException catch (e) {
-      String errorMsg = 'Error desconocido';
-      if (e.code == 'user-not-found') errorMsg = 'Usuario no encontrado';
-      if (e.code == 'wrong-password') errorMsg = 'Contraseña incorrecta';
+  setState(() => _loading = false);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(errorMsg)));
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+  if (user == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Email o contraseña incorrectos'),
+      ),
+    );
+    return;
   }
+
+  await _redirectAfterLogin(user);
+}
+
 
   /* ================== LOGIN GOOGLE ================== */
 
   Future<void> _loginWithGoogle() async {
-    setState(() => _loading = true);
+  setState(() => _loading = true);
 
-    try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        setState(() => _loading = false);
-        return;
-      }
+  final user = await _authService.signInWithGoogle();
 
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+  if (!mounted) return;
 
-      await _auth.signInWithCredential(credential);
+  setState(() => _loading = false);
 
-      final user = _auth.currentUser!;
-      await _updateLastLogin(user);
-
-      if (!mounted) return;
-      await _redirectAfterLogin(user);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al iniciar sesión con Google')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+  if (user == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Error al iniciar sesión con Google'),
+      ),
+    );
+    return;
   }
+
+  await _redirectAfterLogin(user);
+}
+
 
   /* ================== UI ================== */
 

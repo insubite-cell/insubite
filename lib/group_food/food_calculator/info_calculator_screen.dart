@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:insubite_new/design_system/buttons/app_button.dart';
+import 'package:insubite/design_system/buttons/app_button.dart';
 import 'food_calculator_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

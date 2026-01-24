@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:insubite_new/Insumos/insumos_report_screen.dart';
-import 'package:insubite_new/Insumos/insumos_stock_screen.dart';
-import 'package:insubite_new/design_system/cards/list_nav_card.dart';
+import 'package:insubite/Insumos/insumos_report_screen.dart';
+import 'package:insubite/Insumos/insumos_stock_screen.dart';
+import 'package:insubite/design_system/cards/list_nav_card.dart';
 import 'insumos_screen.dart';
 
 class InsumosDashboardScreen extends StatelessWidget {

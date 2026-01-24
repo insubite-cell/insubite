@@ -1,17 +1,13 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:insubite_new/design_system/buttons/app_button.dart';
-import 'package:insubite_new/design_system/inputs/app_text_field.dart';
+import 'package:insubite/design_system/buttons/app_button.dart';
+import 'package:insubite/design_system/inputs/app_text_field.dart';
+import 'package:insubite/service/user_session_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FavoriteFoodsScreen extends StatefulWidget {
-  const FavoriteFoodsScreen({super.key, required String principalUid});
+  const FavoriteFoodsScreen({super.key});
 
   @override
   FavoriteFoodsScreenState createState() => FavoriteFoodsScreenState();
@@ -19,16 +15,15 @@ class FavoriteFoodsScreen extends StatefulWidget {
 
 class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final FirebaseStorage storage = FirebaseStorage.instance;
-  final ImagePicker picker = ImagePicker();
-
   final Map<String, bool> expandedFoods = {};
+  late String currentUid;
+  late String effectiveUid;
+  bool isSecondary = false;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
-      future: _getUidToUse(),
+      future: UserSessionService().getEffectiveUid(),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
@@ -42,14 +37,16 @@ class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
           );
         }
 
-        final uid = snapshot.data!;
+        effectiveUid = snapshot.data!;
+        currentUid = FirebaseAuth.instance.currentUser!.uid;
+        isSecondary = currentUid != effectiveUid;
 
         return Scaffold(
           appBar: AppBar(
             title: Text('Alimentos Favoritos', style: TextStyle(fontSize: 20.sp)),
           ),
           body: StreamBuilder<QuerySnapshot>(
-            stream: firestore.collection('usuarios/$uid/favoritos').snapshots(),
+            stream: firestore.collection('usuarios/$effectiveUid/favoritos').snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Center(
@@ -87,10 +84,6 @@ class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                   return Card(
                     margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                     child: ListTile(
-                      leading: GestureDetector(
-                        onTap: () => _addImage(uid, id, alimento),
-                        child: _buildImage(alimento['imagen']),
-                      ),
                       title: Text(
                         alimento['nombre'] ?? '',
                         style: TextStyle(fontSize: 16.sp),
@@ -120,11 +113,11 @@ class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                         children: [
                           IconButton(
                             icon: Icon(Icons.edit, color: Colors.blue, size: 24.sp),
-                            onPressed: () => _editFavorito(uid, id, alimento),
+                            onPressed: () => _editFavorito(effectiveUid, id, alimento),
                           ),
                           IconButton(
                             icon: Icon(Icons.delete, color: Colors.red, size: 24.sp),
-                            onPressed: () => _deleteFavorito(uid, id),
+                            onPressed: () => _deleteFavorito(effectiveUid, id),
                           ),
                         ],
                       ),
@@ -139,36 +132,15 @@ class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
     );
   }
 
-  Future<String> _getUidToUse() async {
-    final user = auth.currentUser;
-    if (user == null) return '';
-
-    final userDoc = await firestore.collection('usuarios').doc(user.uid).get();
-    final userData = userDoc.data();
-    if (userData == null) return '';
-
-    if (userData['isSecondary'] == true &&
-        userData['lastValidated'] != null &&
-        userData['lastValidated']['principalUid'] != null) {
-      return userData['lastValidated']['principalUid'];
-    }
-
-    return user.uid;
-  }
-
-  List<Widget> _buildAlimentoDetails(
-      Map<String, dynamic> alimento, bool isExpanded) {
+  List<Widget> _buildAlimentoDetails(Map<String, dynamic> alimento, bool isExpanded) {
     final entries = alimento.entries
-        .where((e) =>
-            !['nombre', 'descripcion', 'imagen', 'id'].contains(e.key))
+        .where((e) => !['nombre', 'descripcion', 'imagen', 'id'].contains(e.key))
         .toList();
 
     final visible = isExpanded ? entries : entries.take(5);
 
     String formatValue(dynamic value) {
-      if (value is Map &&
-          value.containsKey('cantidad') &&
-          value.containsKey('unidad')) {
+      if (value is Map && value.containsKey('cantidad') && value.containsKey('unidad')) {
         return "${value['cantidad']} ${value['unidad']}";
       }
       if (value is num) return value.toStringAsFixed(2);
@@ -185,46 +157,29 @@ class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
         .toList();
   }
 
-  Future<void> _addImage(
-      String uid, String docId, Map<String, dynamic> alimento) async {
-    final XFile? pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 400,
-      maxHeight: 400,
-      imageQuality: 80,
-    );
-
-    if (pickedFile == null) return;
-
-    final file = File(pickedFile.path);
-    final storageRef =
-        storage.ref().child('usuarios/$uid/favoritos/$docId.png');
-
-    await storageRef.putFile(file);
-    final downloadUrl = await storageRef.getDownloadURL();
-
-    if (!mounted) return;
-    await firestore
-        .collection('usuarios/$uid/favoritos')
-        .doc(docId)
-        .update({'imagen': downloadUrl});
-  }
-
-  Future<void> _editFavorito(
-      String uid, String docId, Map<String, dynamic> alimento) async {
+  Future<void> _editFavorito(String uid, String docId, Map<String, dynamic> alimento) async {
     final nombreController = TextEditingController(text: alimento['nombre']);
-    final carboController =
-        TextEditingController(text: alimento['carbohidratos']?.toString());
-    final azucarController =
-        TextEditingController(text: alimento['azucares']?.toString());
-    final proteinaController =
-        TextEditingController(text: alimento['proteinas']?.toString());
-    final grasaController =
-        TextEditingController(text: alimento['grasas']?.toString());
-    final porcionController =
-        TextEditingController(text: alimento['porcion']?.toString());
+    final carboCantidadController = TextEditingController(
+        text: alimento['carbohidratos']?['cantidad']?.toString() ?? '');
+    final carboUnidadController =
+        TextEditingController(text: alimento['carbohidratos']?['unidad'] ?? 'g');
 
-    String? newImage = alimento['imagen'];
+    final azucarCantidadController = TextEditingController(
+        text: alimento['azucares']?['cantidad']?.toString() ?? '');
+    final azucarUnidadController =
+        TextEditingController(text: alimento['azucares']?['unidad'] ?? 'g');
+
+    final proteinaCantidadController = TextEditingController(
+        text: alimento['proteinas']?['cantidad']?.toString() ?? '');
+    final proteinaUnidadController =
+        TextEditingController(text: alimento['proteinas']?['unidad'] ?? 'g');
+
+    final grasaCantidadController = TextEditingController(
+        text: alimento['grasas']?['cantidad']?.toString() ?? '');
+    final grasaUnidadController =
+        TextEditingController(text: alimento['grasas']?['unidad'] ?? 'g');
+
+    final porcionController = TextEditingController(text: alimento['porcion'] ?? '');
 
     await showDialog(
       context: context,
@@ -232,63 +187,16 @@ class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
         title: Text('Editar alimento', style: TextStyle(fontSize: 18.sp)),
         content: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (newImage != null && newImage!.isNotEmpty)
-                Image.network(newImage!, width: 100.w, height: 100.h),
-              SizedBox(height: 12.h),
-              AppButton(
-                label: 'Cambiar imagen',
-                leading: Icon(Icons.image, size: 20.sp),
-                onPressed: () async {
-                  final XFile? pickedFile =
-                      await picker.pickImage(source: ImageSource.gallery);
-                  if (pickedFile == null) return;
-
-                  final file = File(pickedFile.path);
-                  final storageRef = storage
-                      .ref()
-                      .child('usuarios/$uid/favoritos/$docId.png');
-
-                  await storageRef.putFile(file);
-                  newImage = await storageRef.getDownloadURL();
-                  if (mounted) setState(() {});
-                },
-              ),
-              SizedBox(height: 12.h),
-              AppTextField(
-              controller: nombreController,
-              label: 'Nombre',
-            ),
-
-              AppTextField(
-                controller: carboController,
-                label: 'Carbohidratos',
-                keyboardType: TextInputType.number,
-              ),
-
-              AppTextField(
-                controller: azucarController,
-                label: 'Azúcares',
-                keyboardType: TextInputType.number,
-              ),
-
-              AppTextField(
-                controller: proteinaController,
-                label: 'Proteínas',
-                keyboardType: TextInputType.number,
-              ),
-
-              AppTextField(
-                controller: grasaController,
-                label: 'Grasas',
-                keyboardType: TextInputType.number,
-              ),
-
-              AppTextField(
-                controller: porcionController,
-                label: 'Porción',
-              ),
-
+              AppTextField(controller: nombreController, label: 'Nombre'),
+              const SizedBox(height: 12),
+              _buildMacroInput('Carbohidratos', carboCantidadController, carboUnidadController),
+              _buildMacroInput('Azúcares', azucarCantidadController, azucarUnidadController),
+              _buildMacroInput('Proteínas', proteinaCantidadController, proteinaUnidadController),
+              _buildMacroInput('Grasas', grasaCantidadController, grasaUnidadController),
+              const SizedBox(height: 12),
+              AppTextField(controller: porcionController, label: 'Porción'),
             ],
           ),
         ),
@@ -301,20 +209,29 @@ class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
           AppButton(
             label: 'Guardar',
             onPressed: () async {
-              await firestore
-                  .collection('usuarios/$uid/favoritos')
-                  .doc(docId)
-                  .update({
+              await firestore.collection('usuarios/$uid/favoritos').doc(docId).update({
                 'nombre': nombreController.text,
-                'carbohidratos': double.tryParse(carboController.text) ?? 0,
-                'azucares': double.tryParse(azucarController.text) ?? 0,
-                'proteinas': double.tryParse(proteinaController.text) ?? 0,
-                'grasas': double.tryParse(grasaController.text) ?? 0,
+                'carbohidratos': {
+                  'cantidad': double.tryParse(carboCantidadController.text) ?? 0,
+                  'unidad': carboUnidadController.text,
+                },
+                'azucares': {
+                  'cantidad': double.tryParse(azucarCantidadController.text) ?? 0,
+                  'unidad': azucarUnidadController.text,
+                },
+                'proteinas': {
+                  'cantidad': double.tryParse(proteinaCantidadController.text) ?? 0,
+                  'unidad': proteinaUnidadController.text,
+                },
+                'grasas': {
+                  'cantidad': double.tryParse(grasaCantidadController.text) ?? 0,
+                  'unidad': grasaUnidadController.text,
+                },
                 'porcion': porcionController.text,
-                'imagen': newImage ?? '',
               });
 
               if (!mounted) return;
+              if (!dialogContext.mounted) return;
               Navigator.pop(dialogContext);
             },
           ),
@@ -323,14 +240,41 @@ class FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
     );
   }
 
-  Future<void> _deleteFavorito(String uid, String docId) async {
-    await firestore.collection('usuarios/$uid/favoritos').doc(docId).delete();
+  Widget _buildMacroInput(String label, TextEditingController cantidadController,
+      TextEditingController unidadController) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: AppTextField(
+                  controller: cantidadController,
+                  label: 'Cantidad',
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 1,
+                child: AppTextField(
+                  controller: unidadController,
+                  label: 'Unidad',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _buildImage(String? imagen) {
-    if (imagen != null && imagen.isNotEmpty) {
-      return Image.network(imagen, width: 50.w, height: 50.h, fit: BoxFit.cover);
-    }
-    return Icon(Icons.fastfood, size: 50.sp);
+  Future<void> _deleteFavorito(String uid, String docId) async {
+    await firestore.collection('usuarios/$uid/favoritos').doc(docId).delete();
   }
 }
