@@ -4,7 +4,7 @@
          Aplicación
          =========================== -->
     <application
-        android:label="insubite"
+        android:label="Insubite"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
