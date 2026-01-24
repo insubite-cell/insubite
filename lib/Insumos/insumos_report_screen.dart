@@ -10,8 +10,7 @@ class InsumosHistoryScreen extends StatefulWidget {
   const InsumosHistoryScreen({super.key});
 
   @override
-  State<InsumosHistoryScreen> createState() =>
-      _InsumosHistoryScreenState();
+  State<InsumosHistoryScreen> createState() => _InsumosHistoryScreenState();
 }
 
 class _InsumosHistoryScreenState extends State<InsumosHistoryScreen> {
@@ -24,7 +23,11 @@ class _InsumosHistoryScreenState extends State<InsumosHistoryScreen> {
   DateTime _from = DateTime.now().subtract(const Duration(days: 30));
   DateTime _to = DateTime.now();
 
+  String _movimientoFilter = 'ambas'; // 'entrada', 'salida', 'ambas'
+  String _tipoFilter = 'Todas';
+
   List<QueryDocumentSnapshot> _docs = [];
+  Set<String> _tiposDisponibles = {};
 
   @override
   void initState() {
@@ -36,13 +39,12 @@ class _InsumosHistoryScreenState extends State<InsumosHistoryScreen> {
     final user = _auth.currentUser;
     if (user == null) return;
 
-    final doc =
-        await _firestore.collection('usuarios').doc(user.uid).get();
+    final doc = await _firestore.collection('usuarios').doc(user.uid).get();
 
     _principalUid =
         doc.data()?['lastValidated']?['principalUid'] ?? user.uid;
 
-    _loadHistory();
+    await _loadHistory();
   }
 
   Future<void> _loadHistory() async {
@@ -51,30 +53,40 @@ class _InsumosHistoryScreenState extends State<InsumosHistoryScreen> {
     setState(() => _loading = true);
 
     try {
-      final snap = await _firestore
+      Query query = _firestore
           .collection('usuarios/$_principalUid/insumos')
-          .where('movimiento', isEqualTo: 'entrada')
-          .where(
-            'createdAt',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(_from),
-          )
-          .where(
-            'createdAt',
-            isLessThanOrEqualTo:
-                Timestamp.fromDate(_to.add(const Duration(days: 1))),
-          )
-          .orderBy('createdAt', descending: true)
-          .get();
+          .where('createdAt',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(_from))
+          .where('createdAt',
+              isLessThanOrEqualTo:
+                  Timestamp.fromDate(_to.add(const Duration(days: 1))))
+          .orderBy('createdAt', descending: true);
+
+      if (_movimientoFilter != 'ambas') {
+        query = query.where('movimiento', isEqualTo: _movimientoFilter);
+      }
+
+      if (_tipoFilter != 'Todas') {
+        query = query.where('tipo', isEqualTo: _tipoFilter);
+      }
+
+      final snap = await query.get();
+
+      // recolectamos todos los tipos disponibles para el dropdown
+      final tiposSet = <String>{};
+      for (var d in snap.docs) {
+        tiposSet.add(d['tipo']);
+      }
 
       setState(() {
         _docs = snap.docs;
+        _tiposDisponibles = tiposSet;
         _loading = false;
       });
     } catch (e) {
       setState(() => _loading = false);
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al cargar historial')),
+        SnackBar(content: Text('Error al cargar historial: $e')),
       );
     }
   }
@@ -87,6 +99,7 @@ class _InsumosHistoryScreenState extends State<InsumosHistoryScreen> {
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
+            // ------------------- RANGO DE FECHAS -------------------
             AppRangeCalendar(
               startDate: _from,
               endDate: _to,
@@ -115,41 +128,83 @@ class _InsumosHistoryScreenState extends State<InsumosHistoryScreen> {
                 }
               },
             ),
+            SizedBox(height: 16.h),
+
+            // ------------------- FILTROS -------------------
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButton<String>(
+                    value: _movimientoFilter,
+                    items: const [
+                      DropdownMenuItem(value: 'ambas', child: Text('Ambas')),
+                      DropdownMenuItem(value: 'entrada', child: Text('Entradas')),
+                      DropdownMenuItem(value: 'salida', child: Text('Salidas')),
+                    ],
+                    onChanged: (v) {
+                      if (v != null) {
+                        setState(() => _movimientoFilter = v);
+                        _loadHistory();
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: DropdownButton<String>(
+                    value: _tipoFilter,
+                    items: ['Todas', ..._tiposDisponibles].map((tipo) {
+                      return DropdownMenuItem(value: tipo, child: Text(tipo));
+                    }).toList(),
+                    onChanged: (v) {
+                      if (v != null) {
+                        setState(() => _tipoFilter = v);
+                        _loadHistory();
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
 
             SizedBox(height: 16.h),
 
+            // ------------------- LISTA -------------------
             Expanded(
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
                   : _docs.isEmpty
-                      ? const Center(
-                          child: Text('No hay entradas en este período'),
-                        )
+                      ? const Center(child: Text('No hay registros en este período'))
                       : ListView.builder(
                           itemCount: _docs.length,
                           itemBuilder: (_, i) {
                             final d = _docs[i];
-                            final fecha = (d['createdAt'] as Timestamp)
-                                .toDate();
+                            final fecha = (d['createdAt'] as Timestamp).toDate();
+                            final movimiento = d['movimiento'] as String? ?? '';
 
                             return Card(
-                              margin:
-                                  EdgeInsets.symmetric(vertical: 6.h),
+                              margin: EdgeInsets.symmetric(vertical: 6.h),
                               child: ListTile(
-                                leading: const Icon(
-                                  Icons.add_box_outlined,
-                                  color: Colors.green,
+                                leading: Icon(
+                                  movimiento == 'entrada'
+                                      ? Icons.add_box_outlined
+                                      : Icons.indeterminate_check_box,
+                                  color: movimiento == 'entrada'
+                                      ? Colors.green
+                                      : Colors.red,
                                 ),
                                 title: Text(d['tipo']),
                                 subtitle: Text(
-                                  DateFormat('dd/MM/yyyy – HH:mm')
-                                      .format(fecha),
+                                  '${movimiento.toUpperCase()} – ${DateFormat('dd/MM/yyyy – HH:mm').format(fecha)}',
                                 ),
                                 trailing: Text(
                                   d['cantidad'].toString(),
                                   style: TextStyle(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.bold,
+                                    color: movimiento == 'entrada'
+                                        ? Colors.green
+                                        : Colors.red,
                                   ),
                                 ),
                               ),

@@ -1,16 +1,17 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:insubite_new/Insumos/insumos_dashboard_screen.dart';
-import 'package:insubite_new/design_system/buttons/app_button.dart';
 import 'package:insubite_new/sensor_bomba/dahsboard_glde.dart';
-
-// DESIGN SYSTEM
-import '/design_system/cards/metric_card.dart';
-import '/design_system/cards/icon_card.dart';
+import '../group_food/food/food_preview_screen.dart';
+import '../design_system/cards/metric_card.dart';
+import '../design_system/cards/icon_card.dart';
+import '../design_system/buttons/app_button.dart';
 
 class SecondaryDashboardScreen extends StatefulWidget {
   final String principalUid;
@@ -34,8 +35,6 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
 
   bool cargando = true;
   String nombrePrincipal = 'Usuario';
-
-  /// 🔹 Flag para forzar reconstrucción de StreamBuilders
   int _refreshFlag = 0;
 
   @override
@@ -51,35 +50,29 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
     super.dispose();
   }
 
-  /// 🔹 Detecta cuando la app vuelve al foreground
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // 🔹 Recarga completa del dashboard al volver de otra pantalla
       _reloadDashboard();
     }
   }
 
-  /// 🔹 Recarga completa del dashboard
   Future<void> _reloadDashboard() async {
     if (!mounted) return;
 
     setState(() {
-      cargando = true; // Muestra loader mientras recarga
+      cargando = true;
     });
 
-    // 🔹 Recarga nombre del principal
     await _cargarNombrePrincipal();
 
-    // 🔹 Fuerza reconstrucción de StreamBuilders y Grid
     if (!mounted) return;
     setState(() {
       _refreshFlag = DateTime.now().millisecondsSinceEpoch;
-      cargando = false; // Oculta loader
+      cargando = false;
     });
   }
 
-  /// ✅ Verifica sesión del usuario y carga datos
   Future<void> _checkSession() async {
     final user = _auth.currentUser;
     if (user == null) {
@@ -91,7 +84,6 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
     }
   }
 
-  /// 🔹 Carga nombre del principal
   Future<void> _cargarNombrePrincipal() async {
     try {
       final doc = await _firestore
@@ -113,14 +105,12 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
     }
   }
 
-  /// 🔹 Cierra sesión
   void _cerrarSesion() async {
     await _auth.signOut();
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/welcome', (_) => false);
   }
 
-  /// 🔹 Estado del sensor
   String _sensorStatusText(DateTime caducidad) {
     final diff = caducidad.difference(DateTime.now());
     if (diff.isNegative) return 'Vencido';
@@ -128,7 +118,6 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
     return '${diff.inDays} días';
   }
 
-  /// 🔹 Diálogo de métricas
   void _showMetricDialog(String metric) {
     showDialog(
       context: context,
@@ -140,25 +129,23 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
-              AppButton(
-        label: 'Sí',
-        onPressed: () {
-          Navigator.pop(context);
-          Navigator.pushNamed(
-            context,
-            metric == 'Carbohidratos'
-                ? '/history_report'
-                : '/insulin_report',
-          );
-        },
-      ),
-
+          AppButton(
+            label: 'Sí',
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                metric == 'Carbohidratos'
+                    ? '/history_report'
+                    : '/insulin_report',
+              );
+            },
+          )
         ],
       ),
     );
   }
 
-  /// 🔹 Refresca indicadores manualmente (pull-to-refresh)
   void refreshIndicators() {
     if (!mounted) return;
     setState(() {
@@ -166,11 +153,36 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
     });
   }
 
+  /// 🔑 ID diario
+  String get _diarioId {
+    final now = DateTime.now();
+    return 'diario_${now.year.toString().padLeft(4, '0')}-'
+        '${now.month.toString().padLeft(2, '0')}-'
+        '${now.day.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _takePicture() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null && mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => FoodPreviewScreen(image: File(pickedFile.path)),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final DateTime hoyInicio =
-        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    final DateTime hoyFin = hoyInicio.add(const Duration(days: 1));
+    final user = _auth.currentUser;
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('Usuario no autenticado')),
+      );
+    }
 
     return ScreenUtilInit(
       designSize: const Size(360, 690),
@@ -233,35 +245,24 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
                               ),
                               SizedBox(height: 12.h),
 
-                              // -------- MÉTRICAS (SOLO HOY) --------
-                              StreamBuilder<QuerySnapshot>(
-                                key: ValueKey('metric_carbs_$_refreshFlag'),
+                              // ✅ MÉTRICAS AGREGADAS DIARIO
+                              StreamBuilder<DocumentSnapshot>(
+                                key: ValueKey('metric_card_$_refreshFlag'),
                                 stream: _firestore
-                                    .collection(
-                                        'usuarios/${widget.principalUid}/calculos_carbohidratos')
-                                    .where(
-                                      'fecha',
-                                      isGreaterThanOrEqualTo:
-                                          Timestamp.fromDate(hoyInicio),
-                                    )
-                                    .where(
-                                      'fecha',
-                                      isLessThan: Timestamp.fromDate(hoyFin),
-                                    )
+                                    .collection('usuarios')
+                                    .doc(widget.principalUid)
+                                    .collection('calculos_agregados')
+                                    .doc(_diarioId)
                                     .snapshots(),
                                 builder: (_, snapshot) {
                                   double carbs = 0;
                                   double insulin = 0;
 
-                                  if (snapshot.hasData) {
-                                    for (var doc in snapshot.data!.docs) {
-                                      carbs +=
-                                          (doc['totalCarbohidratos'] ?? 0)
-                                              .toDouble();
-                                      insulin +=
-                                          (doc['insulinaCalculada'] ?? 0)
-                                              .toDouble();
-                                    }
+                                  if (snapshot.hasData && snapshot.data!.exists) {
+                                    final data =
+                                        snapshot.data!.data() as Map<String, dynamic>;
+                                    carbs = (data['totalCarbohidratos'] ?? 0).toDouble();
+                                    insulin = (data['totalInsulina'] ?? 0).toDouble();
                                   }
 
                                   return Row(
@@ -350,23 +351,22 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
                             icon: Icons.food_bank,
                             title: 'Alimentos',
                             subtitle: 'Explora alimentos',
-                            onTap: () => Navigator.pushNamed(
-                                context, '/food_explorer'),
+                            onTap: () =>
+                                Navigator.pushNamed(context, '/food_explorer'),
                           ),
                           IconCard(
-                              icon: Icons.devices,
-                              title: 'Dispositivo',
-                              subtitle: 'Ver y configurar',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const DevicesScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-
+                            icon: Icons.devices,
+                            title: 'Dispositivo',
+                            subtitle: 'Ver y configurar',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const DevicesScreen(),
+                                ),
+                              );
+                            },
+                          ),
                           IconCard(
                             key: const ValueKey('grid_reporte'),
                             icon: Icons.bar_chart,
@@ -380,8 +380,8 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
                             icon: Icons.receipt_rounded,
                             title: 'Recetas',
                             subtitle: 'Recetas recomendadas',
-                            onTap: () => Navigator.pushNamed(
-                                context, '/recipes_explorer'),
+                            onTap: () =>
+                                Navigator.pushNamed(context, '/recipes_explorer'),
                           ),
                           IconCard(
                             icon: Icons.medical_services_outlined,
@@ -396,7 +396,12 @@ class _SecondaryDashboardScreenState extends State<SecondaryDashboardScreen>
                               );
                             },
                           ),
-
+                          IconCard(
+                            icon: Icons.camera_alt,
+                            title: 'Tomar foto',
+                            subtitle: 'Agregar foto del plato',
+                            onTap: _takePicture,
+                          ),
                         ],
                       ),
                     ],
