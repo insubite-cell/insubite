@@ -6,16 +6,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:provider/provider.dart';
-
+import 'primary_users/register_screen.dart';
 import 'primary_users/firebase_options.dart';
 import 'design_system/theme/app_theme.dart';
+import 'session_resolver_screen.dart';
+import 'package:flutter/foundation.dart';
+
+
 
 // Pantallas principales
 import 'primary_users/dashboard_screen.dart';
 import 'primary_users/welcome_screen.dart';
 import 'primary_users/login_form_screen.dart';
 import 'primary_users/login_welcome_screen.dart';
-import 'primary_users/register_screen.dart';
 
 // Perfil
 import 'profile/profile_screen.dart';
@@ -48,67 +51,113 @@ import 'recipes/recipe_explorer.dart';
 // 🌙 Tema oscuro
 final temaNotifier = ValueNotifier<bool>(false);
 
-// =======================
-// SESSION PROVIDER
-// =======================
-class SessionProvider extends ChangeNotifier {
-  final Duration timeout;
-  Timer? _inactivityTimer;
+/// =======================================================
+/// SESSION PROVIDER (CIERRE FORZADO A LOS 2 MINUTOS)
+/// =======================================================
+class SessionProvider extends ChangeNotifier with WidgetsBindingObserver {
+  static const Duration _timeout = Duration(minutes: 2);
+  static const String _lastActivityKey = 'last_activity';
 
-  SessionProvider({this.timeout = const Duration(minutes: 5)}) {
+  Timer? _timer;
+
+  SessionProvider() {
+    WidgetsBinding.instance.addObserver(this);
+    _saveActivity();
     _startTimer();
   }
 
   void _startTimer() {
-    _inactivityTimer?.cancel();
-    _inactivityTimer = Timer(timeout, _logoutUser);
+    _timer?.cancel();
+    _timer = Timer(_timeout, _logout);
   }
 
-  void resetTimer() {
+  Future<void> resetTimer() async {
     _startTimer();
+    await _saveActivity();
   }
 
-  void _logoutUser() {
+  Future<void> _saveActivity() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt(
+      _lastActivityKey,
+      DateTime.now().millisecondsSinceEpoch,
+    );
+  }
+
+  Future<void> _checkExpired() async {
+    final prefs = await SharedPreferences.getInstance();
+    final last = prefs.getInt(_lastActivityKey);
+
+    if (last == null) return;
+
+    final lastActivity = DateTime.fromMillisecondsSinceEpoch(last);
+    final diff = DateTime.now().difference(lastActivity);
+
+    if (diff >= _timeout) {
+      _logout();
+    }
+  }
+
+  void _logout() {
     FirebaseAuth.instance.signOut();
+  }
+
+  /// 🔥 CLAVE ABSOLUTA: cuando vuelve al foreground
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkExpired();
+    }
   }
 
   @override
   void dispose() {
-    _inactivityTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
     super.dispose();
   }
 }
 
-// =======================
-// MAIN
-// =======================
+/// =======================================================
+/// MAIN
+/// =======================================================
+
+
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔹 Inicializa Firebase
+  // 🔹 Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    debugPrint('Firebase inicializado');
   } catch (e) {
-    if (e.toString().contains('duplicate-app')) {
-      debugPrint('Firebase ya estaba inicializado, continuando...');
-    } else {
+    if (!e.toString().contains('duplicate-app')) {
       rethrow;
     }
   }
 
-  // 🔹 Firebase App Check
-  await FirebaseAppCheck.instance.activate(
-    providerAndroid: AndroidDebugProvider(),
-  );
+await FirebaseAppCheck.instance.activate(
+  // ignore: deprecated_member_use
+  androidProvider: kDebugMode
+      ? AndroidProvider.debug  
+      : AndroidProvider.playIntegrity,
 
-  // 🔹 Lee tema oscuro desde SharedPreferences
+);
+
+  // 🔹 DEBUG: imprimir token de App Check
+  try {
+    final token = await FirebaseAppCheck.instance.getToken(true);
+    debugPrint('🔥 DEBUG APP CHECK TOKEN: $token');
+  } catch (e) {
+    debugPrint('❌ ERROR getting App Check token: $e');
+  }
+
+  // 🔹 Tema: mantener tu lógica original
   final prefs = await SharedPreferences.getInstance();
   temaNotifier.value = prefs.getBool('tema_oscuro') ?? false;
 
-  // 🔹 Ejecuta la app con Provider
   runApp(
     MultiProvider(
       providers: [
@@ -119,15 +168,20 @@ Future<void> main() async {
   );
 }
 
-// =======================
-// APP WIDGET
-// =======================
+
+
+
+
+/// =======================================================
+/// APP
+/// =======================================================
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final sessionProvider = Provider.of<SessionProvider>(context, listen: false);
+    final sessionProvider =
+        Provider.of<SessionProvider>(context, listen: false);
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -148,19 +202,22 @@ class MyApp extends StatelessWidget {
                 darkTheme: AppTheme.dark(),
                 themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
                 home: StreamBuilder<User?>(
-                  stream: FirebaseAuth.instance.authStateChanges(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Scaffold(
-                        body: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    if (snapshot.hasData) {
-                      return const DashboardScreen(principalUid: '');
-                    }
-                    return const WelcomeScreen();
-                  },
-                ),
+                stream: FirebaseAuth.instance.authStateChanges(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  if (snapshot.hasData) {
+                    return const SessionResolverScreen();
+                  }
+
+                  return const WelcomeScreen();
+                },
+              ),
+
                 routes: {
                   '/welcome': (_) => const WelcomeScreen(),
                   '/login': (_) => const LoginFormScreen(),
@@ -172,24 +229,35 @@ class MyApp extends StatelessWidget {
                   '/medical': (_) => const MedicalDataScreen(),
                   '/insumos': (_) => const InsumosScreen(),
                   '/shared_reports': (_) => const SharedScreen(),
-                  '/glucose_device': (_) => const GlucoseDeviceScreen(),
+                  '/glucose_device': (_) =>
+                      const GlucoseDeviceScreen(),
 
                   '/report': (_) => const ReportsExplorerScreen(),
                   '/report_home': (_) => const ReportsHomeScreen(),
                   '/report_info': (_) => const ReportesInfoScreen(),
-                  '/history_report': (_) => const HistoryReportScreen(),
-                  '/insulin_report': (_) => const InsulinReportScreen(),
-                  '/insumos_reportes': (_) => const InsumosHistoryScreen(),
+                  '/history_report': (_) =>
+                      const HistoryReportScreen(),
+                  '/insulin_report': (_) =>
+                      const InsulinReportScreen(),
+                  '/insumos_reportes': (_) =>
+                      const InsumosHistoryScreen(),
 
-                  '/dashbord_nutrientes': (_) => const DashboardNutrientesScreen(),
-                  '/static_dashbord': (_) => const StaticDashbordScreen(),
+                  '/dashbord_nutrientes': (_) =>
+                      const DashboardNutrientesScreen(),
+                  '/static_dashbord': (_) =>
+                      const StaticDashbordScreen(),
 
-                  '/food_explorer': (_) => const DashboardScreenFood(),
-                  '/calculator': (_) => const food_calculator.FoodCalculatorScreen(),
-                  '/food_manager': (_) => food_manager.FoodManagerScreen(),
-                  '/favoritos': (context) => const FavoriteFoodsScreen(),
+                  '/food_explorer': (_) =>
+                      const DashboardScreenFood(),
+                  '/calculator': (_) =>
+                      const food_calculator.FoodCalculatorScreen(),
+                  '/food_manager': (_) =>
+                      food_manager.FoodManagerScreen(),
+                  '/favoritos': (_) =>
+                      const FavoriteFoodsScreen(),
 
-                  '/recipes_explorer': (_) => const RecipeExplorerScreen(),
+                  '/recipes_explorer': (_) =>
+                      const RecipeExplorerScreen(),
                 },
               );
             },

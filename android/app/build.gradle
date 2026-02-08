@@ -16,7 +16,7 @@ android {
     }
         configurations.all {
                 resolutionStrategy {
-                    force 'com.google.firebase:firebase-iid:21.1.0'  // versión compatible
+                    force 'com.google.firebase:firebase-iid:21.1.0' 
                     force 'com.google.firebase:firebase-messaging:25.0.1'
                 }
             }
@@ -39,6 +39,12 @@ android {
             keyAlias 'insubite'
             keyPassword '31082014'
         }
+        debug {
+        storeFile file('C:/Users/Soporte/.android/debug.keystore')
+        storePassword '31082014'
+        keyAlias 'androiddebugkey'
+        keyPassword '31082014'
+    }
     }
 
     buildTypes {

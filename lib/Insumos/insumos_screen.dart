@@ -21,17 +21,19 @@ class _InsumosScreenState extends State<InsumosScreen> {
 
   DateTime _fechaSeleccionada = DateTime.now();
 
-  /// 🔹 Tipo de insumo
-  String _tipoSeleccionado = 'Tiras de glucosa';
-  final List<String> _tiposInsumos = [
-    'Tiras de glucosa',
-    'Tiras de cetonas',
-    'Agujas',
-    'Lancetas',
-    'Sensor de glucosa',
-  ];
+  /// 🔹 CLAVES TÉCNICAS
+  String _tipoSeleccionado = 'tiras_glucosa';
 
-  /// 🔹 Movimiento (entrada / salida)
+  final Map<String, String> _tiposInsumos = {
+    'tiras_glucosa': 'Tiras de glucosa',
+    'tiras_cetonas': 'Tiras de cetonas',
+    'agujas': 'Agujas',
+    'lancetas': 'Lancetas',
+    'insulina_rapida': 'Insulina rápida',
+    'insulina_lenta': 'Insulina lenta',
+  };
+
+  /// 🔹 Movimiento
   String _movimientoSeleccionado = 'salida';
   final List<String> _tiposMovimiento = ['entrada', 'salida'];
 
@@ -46,7 +48,7 @@ class _InsumosScreenState extends State<InsumosScreen> {
     super.dispose();
   }
 
-  /// 🔹 OBTIENE SIEMPRE EL UID DEL USUARIO PRINCIPAL
+  /// 🔹 UID PRINCIPAL
   Future<String?> _getUidPrincipal() async {
     final user = _auth.currentUser;
     if (user == null) return null;
@@ -54,17 +56,7 @@ class _InsumosScreenState extends State<InsumosScreen> {
     final doc =
         await _firestore.collection('usuarios').doc(user.uid).get();
 
-    final data = doc.data();
-    if (data == null) return user.uid;
-
-    final principalUid =
-        data['lastValidated']?['principalUid']?.toString();
-
-    if (principalUid != null && principalUid.isNotEmpty) {
-      return principalUid;
-    }
-
-    return user.uid;
+    return doc.data()?['lastValidated']?['principalUid'] ?? user.uid;
   }
 
   Future<void> _seleccionarFecha() async {
@@ -80,7 +72,7 @@ class _InsumosScreenState extends State<InsumosScreen> {
     }
   }
 
-  /// 🔹 GUARDA EN INSUMOS (ENTRADA O SALIDA)
+  /// 🔹 GUARDAR INSUMO
   Future<void> _guardarInsumo() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -97,9 +89,11 @@ class _InsumosScreenState extends State<InsumosScreen> {
           .doc(uidPrincipal)
           .collection('insumos')
           .add({
-        'tipo': _tipoSeleccionado,
-        'movimiento': _movimientoSeleccionado, // 👈 clave
-        'fecha': DateFormat('yyyy-MM-dd').format(_fechaSeleccionada),
+        'tipo': _tipoSeleccionado, // 👈 clave técnica
+        'tipo_normalizado': _tipoSeleccionado,
+        'movimiento': _movimientoSeleccionado,
+        'fecha': Timestamp.fromDate(_fechaSeleccionada), // fecha real de negocio
+        'fecha_str': DateFormat('yyyy-MM-dd').format(_fechaSeleccionada), // display
         'cantidad': int.parse(_cantidadController.text),
         'createdAt': FieldValue.serverTimestamp(),
       });
@@ -161,9 +155,9 @@ class _InsumosScreenState extends State<InsumosScreen> {
                       /// 🔹 Tipo de insumo
                       AppDropdown<String>(
                         value: _tipoSeleccionado,
-                        items: _tiposInsumos,
+                        items: _tiposInsumos.keys.toList(),
                         label: 'Tipo de insumo',
-                        itemLabel: (e) => e,
+                        itemLabel: (k) => _tiposInsumos[k]!,
                         onChanged: (value) {
                           setState(() => _tipoSeleccionado = value!);
                         },

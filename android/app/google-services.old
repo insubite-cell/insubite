@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "881766632299",
+    "project_id": "insubite8",
+    "storage_bucket": "insubite8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881766632299:android:e218be2ec7ada5f5fc5a2e",
+        "android_client_info": {
+          "package_name": "com.example.insubite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "881766632299-4ps5ob0ouiok63sf6hcfi4sfpqp7nn88.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.insubite",
+            "certificate_hash": "d855f4d7b6483673b11d771df1561beb5a8e856c"
+          }
+        },
+        {
+          "client_id": "881766632299-l1870vbnjtati2929ipi4e1i0d31b2jo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.insubite",
+            "certificate_hash": "5df5bfaa7bacabb87726e2c55ebfdcd7689df8b8"
+          }
+        },
+        {
+          "client_id": "881766632299-g7o1cv9icee6smkuhacm4haknevlj40n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUb2ZdI2VHbTtwONv-XYIzflTt3jL1994"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "881766632299-g7o1cv9icee6smkuhacm4haknevlj40n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
